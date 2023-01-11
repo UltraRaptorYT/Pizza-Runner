@@ -23,9 +23,11 @@ root.title(
     'PIZZA RUNNERS: Done by Soh Hong Yu & Samuel Tay Tze Ming, DAAA/FT/2B/01')  # Change
 root.geometry('1200x675')
 root.config(bg='white')
-
+character = None
 # Make toggle btn
 
+
+# ! You must display the algorithm name, and the number of steps the application took/has taken, in the window’s title bar.
 
 def toggle():
     global toggleBtn
@@ -37,10 +39,12 @@ def toggle():
 
 def start():
     global startBtn
+    global character
     if startBtn.config('relief')[-1] == 'sunken':
         startBtn.config(relief="raised", text="Start")
     else:
         startBtn.config(relief="sunken", text="Stop")
+        character.start(algoOption.get())
 
 
 toggleBtn = Button(text="Add Walls", width=12,
@@ -49,6 +53,9 @@ toggleBtn = Button(text="Add Walls", width=12,
 startBtn = Button(text="Start", width=12,
                   relief="raised", command=start)
 
+ALGO_LIST = ["Left Hand Rule", "Right Hand Rule", "Breadth First Search",
+                "Depth First Search", "A* Search", "Greedy Best First Search"]
+algoOption = ttk.Combobox(root, values=ALGO_LIST)
 
 def open_file():
     file_path = askopenfile(mode='r', filetypes=[('Text Files', '*txt')])
@@ -58,6 +65,7 @@ def open_file():
 
 
 def main():
+    global character
     # Title
     title = Label(root, text='Pizza Runners')
     title.config(fg='black', bg="white", font="impact 24 bold")
@@ -67,9 +75,6 @@ def main():
     algoTitle = Label(root, text='Algorithm')
     algoTitle.config(fg='black', bg="white", font="arial 14")
     algoTitle.grid(row=1, column=1, pady=10, padx=50)
-    ALGO_LIST = ["Left Hand Rule", "Right Hand Rule", "Breadth First Search",
-                 "Depth First Search", "A* Search", "Greedy Best First Search"]
-    algoOption = ttk.Combobox(root, values=ALGO_LIST)
     algoOption.config(width=20)
     algoOption.set(ALGO_LIST[0])
     algoOption['state'] = 'readonly'
@@ -98,9 +103,11 @@ def main():
     startBtn.grid(row=7, column=1)
     canvas = Canvas(root, width=800, height=450)
     canvas.grid(row=1, rowspan=7, column=0, padx=50, sticky=W)
+    # Map
     maze = Maze()
     # maze.upload_map()
     maze.draw(canvas)
+    # Character
     character = Character(canvas=canvas, x=maze.hashmap['start'][0][0], y=maze.hashmap['start'][0][1])
     root.resizable(False, False)
     root.mainloop()

@@ -44,6 +44,11 @@ XXXXXXXXXXXX"""):
         self.columns = len(self.mapString.split("\n")[0])
         return
 
+    def reset(self, canvas):
+        canvas.delete("all")
+        self.draw(canvas)
+        return
+
     def draw(self, canvas):
         pen = Pen(canvas=canvas, tile_size=self.size)
         endX = -(self.columns * self.size / 2)
