@@ -7,6 +7,7 @@ class Maze:
         self.rows = rows
         self.columns = columns
         self.size = size
+        self.mapArr = []
         self.mapString = """XXXXXXXXXXXX
 X...X..X..eX
 X.X....X.XXX
@@ -55,10 +56,12 @@ XXXXXXXXXXXX"""):
         startY = self.rows * self.size / 2
         for row in range(self.rows):
             currentY = startY - row * self.size
+            rowArr = []
             for col in range(self.columns):
                 currentX = endX + col * self.size
                 blockType = list(
                     self.mapString.split("\n")[row])[col]
+                rowArr.append(blockType)
                 if blockType == 'X':
                     pen.fillcolor("grey")
                     self.hashmap["wall"].append((currentX, currentY))
@@ -73,4 +76,5 @@ XXXXXXXXXXXX"""):
                     self.hashmap["path"].append((currentX, currentY))
                 pen.setpos(currentX, currentY)
                 pen.stamp()
+            self.mapArr.append(rowArr)
         return

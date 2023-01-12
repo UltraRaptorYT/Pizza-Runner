@@ -108,7 +108,7 @@ def main():
     # maze.upload_map()
     maze.draw(canvas)
     # Character
-    character = Character(canvas=canvas, x=maze.hashmap['start'][0][0], y=maze.hashmap['start'][0][1])
+    character = Character(canvas=canvas, x=maze.hashmap['start'][0][0], y=maze.hashmap['start'][0][1], maze=maze)
     root.resizable(False, False)
     root.mainloop()
 
