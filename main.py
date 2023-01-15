@@ -17,7 +17,11 @@ from Character.Character import Character
 from Screen.Text import Text
 from Screen.Button import Button
 
+ALGO_LIST = ["Left Hand Rule", "Right Hand Rule", "Breadth First Search", "Depth First Search", "A* Search", "Greedy Best First Search"]
+currentAlgo = 0
+
 root = t.Screen()
+root.title("Pizza Runners")
 root.setup(1200, 675)
 root.cv._rootwindow.resizable(False, False)
 
@@ -25,10 +29,15 @@ character = None
 
 def start():
     global character
-    character.print()
-    turtle = t.RawTurtle(root) 
-    turtle.dot(100, 'cyan')
-    
+    character.start(ALGO_LIST[currentAlgo])
+
+def turnLeft():
+    global character
+    character.turnLeft()
+
+def turnRight():
+    global character
+    character.turnRight()
 
 def main():
     global character
@@ -57,15 +66,15 @@ def main():
         return
     title = Text("Pizza Runners", root, x=0,y=250, bold="bold", fontSize=24)
     title.draw()
-    startBtn = Button(root, x=0, y=-250, startShape="turtle",text="START", size=3, clickFunc=start)
-    startBtn.draw()
-    wallBtn = Button(root, x=100, y=-250, startShape="square",text="Add Wall", size=3)
-    wallBtn.draw()
-    wallBtn = Button(root, x=-100, y=-250, startShape="square",text="Add Wall", size=3)
-    wallBtn.draw()
     maze.draw_map(root)
     # root.textinput("hi",'hi')
     character = Character(canvas=root, x=maze.hashmap['start'][0][0], y=maze.hashmap['start'][0][1], maze=maze)
+    startBtn = Button(root, x=0, y=-250, startShape="turtle",text="START", size=3, clickFunc=start)
+    startBtn.draw()
+    wallBtn = Button(root, x=-100, y=-250, startShape="square",text="Turn Left", size=3, clickFunc=turnLeft)
+    wallBtn.draw()
+    otherBtn = Button(root, x=100, y=-250, startShape="square",text="Turn Right", size=3, clickFunc=turnRight)
+    otherBtn.draw()
     print(filePath)
     root.listen()
     root.mainloop()

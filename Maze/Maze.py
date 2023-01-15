@@ -5,7 +5,7 @@ import turtle as t
 class Maze:
     def __init__(self,  mapString=None, size=40):
         self.size = size
-        self.mapArr = []
+        self.__mapArr = []
         self.mapString = mapString
         self.hashmap = {
             "wall": [],
@@ -25,6 +25,9 @@ class Maze:
                 return True
         return False
 
+    def get_mapArr(self):
+        return self.__mapArr
+
     def reset(self, canvas):
         canvas.delete("all")
         self.draw_map(canvas)
@@ -34,6 +37,8 @@ class Maze:
         pen = Pen(canvas=canvas, tile_size=self.size)
         endX = -(self.columns * self.size / 2)
         startY = self.rows * self.size / 2
+        self.endX = endX
+        self.startY = startY
         for row in range(self.rows):
             currentY = startY - row * self.size
             rowArr = []
@@ -48,6 +53,7 @@ class Maze:
                 elif blockType == 's':
                     pen.fillcolor("lightgreen")
                     self.hashmap["start"].append((currentX, currentY))
+                    print(row,col)
                 elif blockType == 'e':
                     pen.fillcolor("lightblue")
                     self.hashmap["end"].append((currentX, currentY))
@@ -56,5 +62,5 @@ class Maze:
                     self.hashmap["path"].append((currentX, currentY))
                 pen.setpos(currentX, currentY)
                 pen.stamp()
-            self.mapArr.append(rowArr)
+            self.__mapArr.append(rowArr)
         return

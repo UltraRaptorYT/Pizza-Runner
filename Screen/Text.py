@@ -21,7 +21,7 @@ class Text(RawTurtle):
         self.x = x
         self.y = y
         self.text = text
-        
+        self.hideturtle()
 
     def draw(self):
         self.hideturtle()

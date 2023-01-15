@@ -23,11 +23,12 @@ class Button(RawTurtle):
         self.clickColor = clickColor
         self.clickFunc = clickFunc
         self.text = text
+        self.hideturtle()
         return
 
     def draw(self):
-        self.speed('fastest')
         self.hideturtle()
+        self.speed('fastest')
         self.shapesize(self.shapeSize)
         self.shape(self.startShape)
         self.fillcolor(self.startColor)
