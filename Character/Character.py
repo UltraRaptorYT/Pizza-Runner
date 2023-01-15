@@ -26,6 +26,9 @@ class Character(RawTurtle):
           print(self.maze.mapArr)
           return
       return
+
+    def print(self):
+        print("Hi")
       
       
       

@@ -3,19 +3,10 @@ import turtle as t
 
 
 class Maze:
-    def __init__(self,  rows=8, columns=12, size=40):
-        self.rows = rows
-        self.columns = columns
+    def __init__(self,  mapString=None, size=40):
         self.size = size
         self.mapArr = []
-        self.mapString = """XXXXXXXXXXXX
-X...X..X..eX
-X.X....X.XXX
-X..X.X.X.X.X
-XX.XXX.X...X
-X........X.X
-XsXX...X...X
-XXXXXXXXXXXX"""
+        self.mapString = mapString
         self.hashmap = {
             "wall": [],
             "start": [],
@@ -23,34 +14,23 @@ XXXXXXXXXXXX"""
             "path": [],
         }
 
-    # def set_map(self):
-    #     print("hi")
-    #     return
-
-    # def get_map(self):
-    #     print(self._map)
-    #     return
-
-    def upload_map(self, mapString="""XXXXXXXXXXXX
-X...X..X..eX
-X.X....X.XXX
-X..X.X.X.X.X
-XX.XXX.X...X
-X........X.X
-XsXX...X...X
-XXXXXXXXXXXX"""):
-        # ! Input need to ensure that no of rows and columns are the same throughout
-        self.mapString = mapString
-        self.rows = len(self.mapString.split("\n"))
-        self.columns = len(self.mapString.split("\n")[0])
-        return
+    def upload_map(self, filePath):
+        with open(filePath, 'r', encoding="utf8") as f:
+            self.mapString = f.read().strip()                
+            self.rows = len(self.mapString.split("\n"))
+            self.columns = len(self.mapString.split("\n")[0])
+        # Ensure that the no of rows and columns are the same throughout
+        for i in range(1, self.rows):
+            if self.columns != len(self.mapString.split("\n")[i]):
+                return True
+        return False
 
     def reset(self, canvas):
         canvas.delete("all")
-        self.draw(canvas)
+        self.draw_map(canvas)
         return
 
-    def draw(self, canvas):
+    def draw_map(self, canvas):
         pen = Pen(canvas=canvas, tile_size=self.size)
         endX = -(self.columns * self.size / 2)
         startY = self.rows * self.size / 2
