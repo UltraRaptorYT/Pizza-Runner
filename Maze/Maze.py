@@ -1,6 +1,7 @@
 from Maze.Pen import Pen
 import turtle as t
 
+VALID_PATH = ["X","s","e","."]
 
 class Maze:
     def __init__(self,  mapString=None, size=40):
@@ -20,9 +21,12 @@ class Maze:
             self.rows = len(self.mapString.split("\n"))
             self.columns = len(self.mapString.split("\n")[0])
         # Ensure that the no of rows and columns are the same throughout
-        for i in range(1, self.rows):
+        for i in range(self.rows):
             if self.columns != len(self.mapString.split("\n")[i]):
                 return True
+            for j in range(self.columns):
+                if self.mapString.split("\n")[i][j] not in VALID_PATH:
+                    return True
         return False
 
     def get_mapArr(self):
