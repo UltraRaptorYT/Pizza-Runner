@@ -47,16 +47,20 @@ class Character(RawTurtle):
 
     def goForward(self):
         validPath, isEnd = self.checkAdj()
-        print(self.currentIndex)
-        print(self.maze.get_mapArr())
+        if isEnd:
+            print("End")
         if validPath:
             self.currentIndex = validPath
             self.forward(self.size)
+            self.step += 1
+            time.sleep(0.1)
 
-    def checkAdj(self):
+    def checkAdj(self, direction=None):
+        if direction is None:
+            direction = self.facing
         movingIndex = list(self.currentIndex)
-        movingIndex[0] += INDEX_MAP[self.facing][0]
-        movingIndex[1] += INDEX_MAP[self.facing][1]
+        movingIndex[0] += INDEX_MAP[direction][0]
+        movingIndex[1] += INDEX_MAP[direction][1]
         checkTile = self.maze.get_mapArr()[movingIndex[0]][movingIndex[1]]
         if checkTile == "X":
             return [False, False]
@@ -67,11 +71,13 @@ class Character(RawTurtle):
     
     def start(self, algorithm="Left Hand Rule"):
         startTime = 0
+        self.step = 0
         self.algorithm = algorithm
         exploredNum = 0  # No. of explored path
         print(self.algorithm)
         self.seen = []
         if algorithm == "Left Hand Rule":
+            self.pendown()            
             self.goForward()
             return
         return
