@@ -29,7 +29,8 @@ character = None
 
 def start():
     global character
-    character.start(ALGO_LIST[currentAlgo])
+    if not character.state:
+        character.start(ALGO_LIST[currentAlgo])
 
 def turnLeft():
     global character
@@ -73,7 +74,8 @@ def main():
     wallBtn.draw()
     otherBtn = Button(root, x=100, y=-250, startShape="square",text="Turn Right", size=3, clickFunc=turnRight)
     otherBtn.draw()
-    startBtn = Button(root, x=0, y=-250, startShape="turtle",text="START", size=3, clickFunc=start)
+    startBtn = Button(root, x=0, y=-250, startShape="turtle", text="START",
+                      size=3, clickFunc=start, clickText="RUNNING")
     startBtn.draw()
     print(filePath)
     root.listen()

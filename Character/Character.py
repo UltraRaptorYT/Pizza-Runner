@@ -30,10 +30,13 @@ class Character(RawTurtle):
         self.showturtle()
         self.size = size
         self.facing = DIRECTION_MAP[self.heading()]
+        self.startX = x
+        self.startY = y
         self.currentIndex = [int((self.maze.startY - self.y) /
                              self.size), int((self.x - self.maze.endX)/self.size)]
         print(self.currentIndex)
         print(self.facing)
+        self.state = False
 
     def turnLeft(self):
         self.left(90)
@@ -70,18 +73,44 @@ class Character(RawTurtle):
             return [movingIndex, False]
     
     def start(self, algorithm="Left Hand Rule"):
+        if self.pos() != (self.startX, self.startY):
+            self.reset_everything()
+            time.sleep(0.5)
         startTime = 0
         self.step = 0
         self.algorithm = algorithm
         exploredNum = 0  # No. of explored path
         print(self.algorithm)
         self.seen = []
+        self.state = True
         if algorithm == "Left Hand Rule":
-            self.pendown()            
+            self.pendown()    
+            while not self.checkAdj()[1] and self.step < 50:     
+                directionList = list(INDEX_MAP.keys())  
+                # checkLeft wall
+                if self.checkAdj(directionList[(directionList.index(self.facing) + 1) % len(directionList)])[0]:
+                    self.turnLeft()
+                    self.goForward()    
+                else:
+                    # checkFront wall
+                    if self.checkAdj()[0]:
+                        self.goForward()
+                    else:
+                        self.turnRight()        
             self.goForward()
-            return
+        self.state = False
         return
 
-    def print(self):
-        self.goForward()
-        print(self.maze)
+    def reset_everything(self):
+        self.reset()
+        self.hideturtle()
+        self.penup()
+        self.setpos(self.startX, self.startY)
+        self.x = self.startX
+        self.y = self.startY
+        self.currentIndex = [int((self.maze.startY - self.y) /
+                        self.size), int((self.x - self.maze.endX)/self.size)]
+        self.setheading(0)
+        self.maze.reset()
+        self.showturtle()
+        print(self.currentIndex)

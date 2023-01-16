@@ -12,7 +12,7 @@ from turtle import RawTurtle
 
 
 class Button(RawTurtle):
-    def __init__(self, canvas=None, x=0, y=0, text="", startShape="square", size=2, startColor="lightgreen", clickColor="green", clickFunc=None):
+    def __init__(self, canvas=None, x=0, y=0, text="", startShape="square", size=2, startColor="lightgreen", clickColor="green", clickFunc=None, clickText =None):
         super().__init__(canvas)
         self.canvas = canvas
         self.shapeSize = size
@@ -23,6 +23,10 @@ class Button(RawTurtle):
         self.clickColor = clickColor
         self.clickFunc = clickFunc
         self.text = text
+        if clickText:
+            self.clickText = clickText
+        else:
+            self.clickText = self.text
         self.hideturtle()
         return
 
@@ -41,9 +45,11 @@ class Button(RawTurtle):
 
     def onClick(self, x, y):
         self.fillcolor(self.clickColor)
-        self.write(self.text, align='center')
+        self.clear()
+        self.write(self.clickText, align='center')
         if self.clickFunc != None:
             self.clickFunc()
         self.fillcolor(self.startColor)
+        self.clear()
         self.write(self.text, align='center')
         return
