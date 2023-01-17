@@ -47,17 +47,17 @@ class Character(RawTurtle):
         self.right(90)
         self.facing = DIRECTION_MAP[self.heading()]
         print(self.facing)
-
+    
     def goForward(self):
         validPath, isEnd = self.checkAdj()
         if isEnd:
             print("End")
         if validPath:
             self.currentIndex = validPath
-            self.forward(self.size)
             self.step += 1
+            self.forward(self.size)
             time.sleep(0.1)
-
+    
     def checkAdj(self, direction=None):
         if direction is None:
             direction = self.facing
@@ -99,6 +99,7 @@ class Character(RawTurtle):
                         self.turnRight()        
             self.goForward()
         self.state = False
+        
         return
 
     def reset_everything(self):

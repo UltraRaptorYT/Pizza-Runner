@@ -20,7 +20,7 @@ class Text(RawTurtle):
         self.align = align
         self.x = x
         self.y = y
-        self.text = text
+        self.__text = text
         self.hideturtle()
 
     def draw(self):
@@ -28,4 +28,15 @@ class Text(RawTurtle):
         self.penup()
         self.speed('fastest')
         self.setpos(self.x,self.y)
-        self.write(self.text, font=(self.font,self.fontSize,self.bold),align=self.align)
+        self.write(self.__text, font=(self.font,self.fontSize,self.bold),align=self.align)
+
+    def __setText(self, text):
+        self.__text = text
+
+    def getText(self):
+        return self.__text
+
+    def changeText(self, text):
+        self.__setText(text)
+        self.clear()
+        self.draw()
