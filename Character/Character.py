@@ -99,6 +99,22 @@ class Character(RawTurtle):
                         self.turnRight()        
             self.goForward()
         self.state = False
+        if algorithm == "Right Hand Rule":
+            self.pendown()    
+            while not self.checkAdj()[1] and self.step < 50:     
+                directionList = list(INDEX_MAP.keys())  
+                # checkRight wall
+                if self.checkAdj(directionList[(directionList.index(self.facing) - 1) % len(directionList)])[0]:
+                    self.turnRight()
+                    self.goForward()    
+                else:
+                    # checkFront wall
+                    if self.checkAdj()[0]:
+                        self.goForward()
+                    else:
+                        self.turnLeft()        
+            self.goForward()
+        self.state = False
         
         return
 
