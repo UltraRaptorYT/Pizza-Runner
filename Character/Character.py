@@ -19,6 +19,7 @@ INDEX_MAP = {
 class Character(RawTurtle):
     def __init__(self, maze, canvas=None, x=0, y=0, size=40):
         super().__init__(canvas)
+        self.canvas = canvas
         self.hideturtle()
         self.shape('turtle')
         self.pencolor('black')
@@ -57,7 +58,67 @@ class Character(RawTurtle):
             self.step += 1
             self.forward(self.size)
             time.sleep(0.1)
+
+    def moveLeft(self):
+        if self.facing == "NORTH":
+            self.left(90)
+            self.facing = DIRECTION_MAP[self.heading()]
+        elif self.facing == "SOUTH":
+            self.right(90)
+            self.facing = DIRECTION_MAP[self.heading()]
+        elif self.facing == "EAST":
+            self.left(90)
+            self.left(90)
+            self.facing = DIRECTION_MAP[self.heading()]
+        elif self.facing == "WEST":
+            self.facing = DIRECTION_MAP[self.heading()]
+        self.goForward()
+
+    def moveRight(self):
+        if self.facing == "NORTH":
+            self.right(90)
+            self.facing = DIRECTION_MAP[self.heading()]
+        elif self.facing == "SOUTH":
+            self.left(90)
+            self.facing = DIRECTION_MAP[self.heading()]
+        elif self.facing == "WEST":
+            self.right(90)
+            self.right(90)
+            self.facing = DIRECTION_MAP[self.heading()]
+        elif self.facing == "EAST":
+            self.facing = DIRECTION_MAP[self.heading()]
+        self.goForward()
     
+    def moveForward(self):
+        if self.facing == "EAST":
+            self.left(90)
+            self.facing = DIRECTION_MAP[self.heading()]
+        elif self.facing == "SOUTH":
+            self.left(90)
+            self.left(90)
+            self.facing = DIRECTION_MAP[self.heading()]
+        elif self.facing == "WEST":
+            self.right(90)
+            self.facing = DIRECTION_MAP[self.heading()]
+        elif self.facing == "NORTH":
+            self.facing = DIRECTION_MAP[self.heading()]
+        self.goForward()
+
+    def moveDown(self):
+        if self.facing == "EAST":
+            self.right(90)
+            self.facing = DIRECTION_MAP[self.heading()]
+        elif self.facing == "NORTH":
+            self.right(90)
+            self.right(90)
+            self.facing = DIRECTION_MAP[self.heading()]
+        elif self.facing == "WEST":
+            self.left(90)
+            self.facing = DIRECTION_MAP[self.heading()]
+        elif self.facing == "SOUTH":
+            self.facing = DIRECTION_MAP[self.heading()]
+        self.goForward()
+
     def checkAdj(self, direction=None):
         if direction is None:
             direction = self.facing
@@ -115,9 +176,35 @@ class Character(RawTurtle):
                         self.turnLeft()        
             self.goForward()
         self.state = False
+        # if algorithm == "Breadth First Search":
+        #     self.pendown()
+        #     while not self.checkAdj()[1] and self.step < 50:
+        #         directionList = list(INDEX_MAP.keys())
+        #         #checkRight wall
+        #         if self.checkAdj(directionList[(directionList.index(self.facing) - 1) % len(directionList)])[0] and self.checkAdj(directionList[(directionList.index(self.facing) + 1) % len(directionList)])[0]:
+        #             self.turnRight()
+        #             self.goForward()  
+        #         #checkLeft wall
+        #         if self.checkAdj(directionList[(directionList.index(self.facing) + 1) % len(directionList)])[0]:
+        #             self.turnLeft()
+        #             self.goForward()
+        #         if self.checkAdj()[0]:
+        #             self.goForward()
+        #     self.goForward()
+        # self.state = False
         
+        if algorithm == "Free Roam":
+            self.pendown()
+            while not self.checkAdj()[1] and self.step < 50:     
+                directionList = list(INDEX_MAP.keys()) 
+                self.canvas.listen()
+                self.canvas.onkey(self.moveLeft, "Left")
+                self.canvas.onkey(self.moveRight, "Right")
+                self.canvas.onkey(self.moveForward, "Up")
+                self.canvas.onkey(self.moveDown, "Down")
+                self.canvas.mainloop()
+        self.state = False
         return
-
     def reset_everything(self):
         self.reset()
         self.hideturtle()

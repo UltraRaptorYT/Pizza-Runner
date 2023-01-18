@@ -18,7 +18,7 @@ from Screen.Text import Text
 from Screen.Button import Button
 from datetime import datetime, timedelta
 
-ALGO_LIST = ["Left Hand Rule", "Right Hand Rule", "Breadth First Search", "Depth First Search", "A* Search", "Greedy Best First Search"]
+ALGO_LIST = ["Left Hand Rule", "Right Hand Rule", "Breadth First Search", "Depth First Search", "A* Search", "Greedy Best First Search", "Free Roam"]
 currentAlgo = 0
 
 root = t.Screen()
