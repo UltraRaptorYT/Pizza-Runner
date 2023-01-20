@@ -30,15 +30,21 @@ root.cv._rootwindow.resizable(False, False)
 
 character = None
 heading = None
+maze = None
+isRunning = False
 
 def updateTimer():
     global character
+    global maze
+    global isRunning
     if character.state:
         updateTitle()
+    isRunning = True
     root.ontimer(updateTimer, 1000)
     return
 
 def updateTitle():
+    print("Hello World")
     global title
     titleArr = title.split(" | Timer: ")
     stepArr = titleArr[0].split("steps: ")
@@ -54,20 +60,24 @@ def resetTitle():
     global ogTitle
     global title
     ogTitle = f"PIZZA RUNNER: {ALGO_LIST[currentAlgo]} | Number of steps: 0 | Timer: 00:00"
-    root.title(ogTitle)
     title = ogTitle
+    root.title(ogTitle)
 
 def start():  
-    resetTitle()  
     global character
     global heading
-    if not character.state:
+    global maze
+    global isRunning
+    resetTitle()
+    if not character.state and not maze.state:
+        resetTitle()
         headingText = heading.getText()
         heading.changeText(headingText + " " + ALGO_LIST[currentAlgo])
+        if not isRunning:
+            updateTimer()
         character.start(ALGO_LIST[currentAlgo])
         updateTitle()
         heading.changeText(headingText)
-
 
 def turnLeft():
     global character
@@ -76,7 +86,6 @@ def turnLeft():
 def turnRight():
     global character
     character.turnRight()
-
 
 def switchAlgo():
     global character
@@ -92,6 +101,7 @@ def switchAlgo():
 def main():
     global character
     global heading
+    global maze
     filePath = None
     if (len(sys.argv) == 1):
         print("Using default maze")

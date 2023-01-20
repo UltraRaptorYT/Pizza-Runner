@@ -38,6 +38,7 @@ class Character(RawTurtle):
         print(self.currentIndex)
         print(self.facing)
         self.state = False
+        self.step = 0
 
     def turnLeft(self):
         self.left(90)
@@ -159,8 +160,7 @@ class Character(RawTurtle):
                     else:
                         self.turnRight()        
             self.goForward()
-        self.state = False
-        if algorithm == "Right Hand Rule":
+        elif algorithm == "Right Hand Rule":
             self.pendown()    
             while not self.checkAdj()[1] and self.step < 50:     
                 directionList = list(INDEX_MAP.keys())  

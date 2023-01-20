@@ -16,6 +16,7 @@ class Maze:
             "end": [],
             "road": [],
         }
+        self.state = False
 
     def upload_map(self, filePath):
         with open(filePath, 'r', encoding="utf8") as f:
@@ -51,6 +52,7 @@ class Maze:
             currentY = startY - row * self.size
             rowArr = []
             for col in range(self.columns):
+                self.state = True
                 currentX = endX + col * self.size
                 blockType = list(
                     self.mapString.split("\n")[row])[col]
@@ -72,4 +74,5 @@ class Maze:
                 pen.setpos(currentX, currentY)
                 pen.stamp()
             self.__mapArr.append(rowArr)
+        self.state = False
         return
