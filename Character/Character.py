@@ -1,5 +1,6 @@
 from turtle import RawTurtle
 import time
+from Maze.Pen import Pen
 
 DIRECTION_MAP = {
     0: "EAST",
@@ -39,7 +40,8 @@ class Character(RawTurtle):
         print(self.facing)
         self.state = False
         self.step = 0
-
+    
+    # Basic Functions for algorithms
     def turnLeft(self):
         self.left(90)
         self.facing = DIRECTION_MAP[self.heading()]
@@ -58,68 +60,57 @@ class Character(RawTurtle):
             self.currentIndex = validPath
             self.step += 1
             self.forward(self.size)
-            time.sleep(0.1)
 
+    #Basic movement for Free Roam
     def moveLeft(self):
         if self.facing == "NORTH":
-            self.left(90)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.turnLeft()
         elif self.facing == "SOUTH":
-            self.right(90)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.turnRight()
         elif self.facing == "EAST":
             self.left(90)
-            self.left(90)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.turnLeft()
         elif self.facing == "WEST":
             self.facing = DIRECTION_MAP[self.heading()]
         self.goForward()
 
     def moveRight(self):
         if self.facing == "NORTH":
-            self.right(90)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.turnRight()
         elif self.facing == "SOUTH":
-            self.left(90)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.turnLeft()
         elif self.facing == "WEST":
             self.right(90)
-            self.right(90)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.turnRight()
         elif self.facing == "EAST":
             self.facing = DIRECTION_MAP[self.heading()]
         self.goForward()
     
     def moveForward(self):
         if self.facing == "EAST":
-            self.left(90)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.turnLeft()
         elif self.facing == "SOUTH":
             self.left(90)
-            self.left(90)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.turnLeft()
         elif self.facing == "WEST":
-            self.right(90)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.turnRight()
         elif self.facing == "NORTH":
             self.facing = DIRECTION_MAP[self.heading()]
         self.goForward()
 
     def moveDown(self):
         if self.facing == "EAST":
-            self.right(90)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.turnRight()
         elif self.facing == "NORTH":
             self.right(90)
-            self.right(90)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.turnRight()
         elif self.facing == "WEST":
-            self.left(90)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.turnLeft()
         elif self.facing == "SOUTH":
             self.facing = DIRECTION_MAP[self.heading()]
         self.goForward()
 
+    # Checking for walls 
     def checkAdj(self, direction=None):
         if direction is None:
             direction = self.facing
@@ -134,6 +125,7 @@ class Character(RawTurtle):
         else:
             return [movingIndex, False]
     
+    # Start button setting the default algorithm to Left Hand Rule
     def start(self, algorithm="Left Hand Rule"):
         if self.pos() != (self.startX, self.startY):
             self.reset_everything()
@@ -160,6 +152,7 @@ class Character(RawTurtle):
                     else:
                         self.turnRight()        
             self.goForward()
+        # Switching algorithm to Right Hand Rule
         elif algorithm == "Right Hand Rule":
             self.pendown()    
             while not self.checkAdj()[1] and self.step < 50:     
@@ -175,7 +168,6 @@ class Character(RawTurtle):
                     else:
                         self.turnLeft()        
             self.goForward()
-        self.state = False
         # if algorithm == "Breadth First Search":
         #     self.pendown()
         #     while not self.checkAdj()[1] and self.step < 50:
@@ -191,9 +183,9 @@ class Character(RawTurtle):
         #         if self.checkAdj()[0]:
         #             self.goForward()
         #     self.goForward()
-        # self.state = False
-        
-        if algorithm == "Free Roam":
+        # self.state = False 
+        # Switch to Free Roam
+        elif algorithm == "Free Roam":
             self.pendown()
             while not self.checkAdj()[1] and self.step < 50:     
                 directionList = list(INDEX_MAP.keys()) 
@@ -205,6 +197,7 @@ class Character(RawTurtle):
                 self.canvas.mainloop()
         self.state = False
         return
+    # Resetting state of maze and turtle
     def reset_everything(self):
         self.reset()
         self.hideturtle()
@@ -218,3 +211,4 @@ class Character(RawTurtle):
         self.maze.reset()
         self.showturtle()
         print(self.currentIndex)
+    

@@ -22,13 +22,13 @@ ALGO_LIST = ["Left Hand Rule", "Right Hand Rule", "Breadth First Search",
              "Depth First Search", "A* Search", "Greedy Best First Search", "Free Roam"]
 
 ALGO_INFO = {
-    "Left Hand Rule": "",
-    "Right Hand Rule": "",
-    "Breadth First Search": "This algorithm explores all nodes at the present depth prior to moving on to the nodes at the next depth level. It is an uninformed search algorithm.\nGurantees shortest path.",
-    "Depth First Search": "This algorithm starts at the root node and explores as far as possible along each branch before backtracking. It is an uninformed search algorithm.\nDoes not gurantee shortest path",
-    "A* Search": "This algorithm is the most optimal in terms of time efficiency. It is an informed search algorithm that utilises 2 heuristics to find the shortest path.\nGurantees shortest path.",
-    "Greedy Best First Search": "This algorithm is an informed search algorithm that only utilises one heuristic function that always chooses the path which appear best at the moment.\nDoes not gurantee shortest path.",
-    "Free Roam": ""
+    "Left Hand Rule": "The 'Left Hand Rule' approach is to make your way through the maze, while choosing how to turn at intersections as follows: Always turn left if you can. If you cannot turn left, go straight. If you cannot turn left, or go straight, turn right.",
+    "Right Hand Rule": "The 'Right Hand Rule' approach is similar to the 'Left Hand Rule': Instead of always turning left, always turn right. If you cannot turn right, go straight. If you cannot turn right or go straight, turn left.",
+    "Breadth First Search": "This algorithm explores all nodes at the present depth prior to moving on to the nodes at the next depth level. It is an uninformed search algorithm.\nGuarantees shortest path.",
+    "Depth First Search": "This algorithm starts at the root node and explores as far as possible along each branch before backtracking. It is an uninformed search algorithm.\nDoes not guarantee shortest path",
+    "A* Search": "This algorithm is the most optimal in terms of time efficiency. It is an informed search algorithm that utilises 2 heuristics to find the shortest path.\nGuarantees shortest path.",
+    "Greedy Best First Search": "This algorithm is an informed search algorithm that only utilises one heuristic function that always chooses the path which appear best at the moment.\nDoes not guarantee shortest path.",
+    "Free Roam": "Have fun"
 }
 
 currentAlgo = 0
@@ -190,10 +190,11 @@ def main():
                       size=3, clickFunc=start, clickText="RUNNING")
     startBtn.draw()
     print(filePath)
+    root.delay(0)
     root.listen()
     root.onkey(switchAlgo, 'Tab')
     root.onkey(start, 'space')
-    root.ontimer(updateTimer, 1000)
+    root.ontimer(updateTimer, 1)
     root.mainloop()
     return
 
