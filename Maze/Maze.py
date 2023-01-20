@@ -24,12 +24,22 @@ class Maze:
             self.rows = len(self.mapString.split("\n"))
             self.columns = len(self.mapString.split("\n")[0])
         # Ensure that the no of rows and columns are the same throughout
+            containsStart = False
+            containsEnd = False
         for i in range(self.rows):
             if self.columns != len(self.mapString.split("\n")[i]):
-                return True
+                return "Map have different row / column sizes"
             for j in range(self.columns):
                 if self.mapString.split("\n")[i][j] not in VALID_PATH:
-                    return True
+                    return "Map have invalid character"
+                elif self.mapString.split("\n")[i][j] == "s":
+                    containsStart = True
+                elif self.mapString.split("\n")[i][j] == "e":
+                    containsEnd = True
+        if not containsStart:
+            return "Missing start point"
+        if not containsEnd:
+            return "Missing end point"
         return False
 
     def get_mapArr(self):
