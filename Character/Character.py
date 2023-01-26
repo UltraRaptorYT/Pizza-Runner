@@ -31,6 +31,7 @@ class Character(RawTurtle):
         self.maze = maze
         self.showturtle()
         self.size = size
+        self.shapesize(size / 40)
         self.facing = DIRECTION_MAP[self.heading()]
         self.startX = x
         self.startY = y
@@ -131,6 +132,7 @@ class Character(RawTurtle):
             self.reset_everything()
             time.sleep(0.5)
         startTime = 0
+        self.shapesize(self.size / 40)
         self.step = 0
         self.algorithm = algorithm
         exploredNum = 0  # No. of explored path
@@ -139,7 +141,7 @@ class Character(RawTurtle):
         self.state = True
         if algorithm == "Left Hand Rule":
             self.pendown()    
-            while not self.checkAdj()[1] and self.step < 50:     
+            while not self.checkAdj()[1]:     
                 directionList = list(INDEX_MAP.keys())  
                 # checkLeft wall
                 if self.checkAdj(directionList[(directionList.index(self.facing) + 1) % len(directionList)])[0]:
@@ -155,7 +157,7 @@ class Character(RawTurtle):
         # Switching algorithm to Right Hand Rule
         elif algorithm == "Right Hand Rule":
             self.pendown()    
-            while not self.checkAdj()[1] and self.step < 50:     
+            while not self.checkAdj()[1]:     
                 directionList = list(INDEX_MAP.keys())  
                 # checkRight wall
                 if self.checkAdj(directionList[(directionList.index(self.facing) - 1) % len(directionList)])[0]:
@@ -187,7 +189,7 @@ class Character(RawTurtle):
         # Switch to Free Roam
         elif algorithm == "Free Roam":
             self.pendown()
-            while not self.checkAdj()[1] and self.step < 50:     
+            while not self.checkAdj()[1]:     
                 directionList = list(INDEX_MAP.keys()) 
                 self.canvas.listen()
                 self.canvas.onkey(self.moveLeft, "Left")
@@ -203,6 +205,7 @@ class Character(RawTurtle):
         self.hideturtle()
         self.penup()
         self.setpos(self.startX, self.startY)
+        self.shapesize(self.size / 40)
         self.x = self.startX
         self.y = self.startY
         self.currentIndex = [int((self.maze.startY - self.y) /

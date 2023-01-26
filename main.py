@@ -107,14 +107,14 @@ def turnRight():
     character.turnRight()
 
 
-def breakText(string):
+def breakText(string, maxLength = 25):
     outputArr = []
     stringArr = string.split()
     counter = 0
     lineArr = []
     while counter < len(stringArr):
         lineArr.append(stringArr[counter])
-        if len(" ".join(lineArr)) > 20:
+        if len(" ".join(lineArr)) > maxLength:
             outputArr.append(" ".join(lineArr))
             lineArr = []
         counter += 1
@@ -165,20 +165,20 @@ def main():
         print(f"Map Upload Error: {error}")
         return
     heading = Text("PIZZA RUNNERS:", root, x=0,
-                   y=250, bold="bold", fontSize=24)
+                   y=285, bold="bold", fontSize=24)
     heading.draw()
     doneBy = Text("Done by Soh Hong Yu and Samuel Tay Tze Ming from DAAA/FT/2B/01",
-                  root, x=0, y=200, bold="bold", fontSize=20)
+                  root, x=0, y=250, bold="bold", fontSize=20)
     doneBy.draw()
     maze.draw_map(root)
     # root.textinput("hi",'hi')
     character = Character(
         canvas=root, x=maze.hashmap['start'][0][0], y=maze.hashmap['start'][0][1], maze=maze, size=maze.size)
     instructions = Text("Controls\n1.\n2.\n3.",
-                        root, x=maze.endX - 100, y=0, bold="normal", fontSize=14, align="right")
+                        root, x=maze.endX - maze.size * 4, y=0, bold="normal", fontSize=14, align="right")
     instructions.draw()
     algoText = Text(f"Algorithm Information:\n{ALGO_LIST[currentAlgo]}\n\n{breakText(ALGO_INFO[ALGO_LIST[currentAlgo]])}",
-                    root, x=-maze.endX + 50, y=-maze.startY + 50, bold="normal", fontSize=14, align="left")
+                    root, x=-maze.endX + maze.size * 2, y=-maze.startY + maze.size, bold="normal", fontSize=14, align="left")
     algoText.draw()
     wallBtn = Button(root, x=-100, y=-250, startShape="square",
                      text="Turn Left", size=3, clickFunc=turnLeft)

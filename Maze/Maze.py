@@ -36,6 +36,8 @@ class Maze:
                     containsStart = True
                 elif self.mapString.split("\n")[i][j] == "e":
                     containsEnd = True
+        self.size = min(48 - max(self.rows, self.columns), 40)
+        print(self.size)
         if not containsStart:
             return "Missing start point"
         if not containsEnd:
