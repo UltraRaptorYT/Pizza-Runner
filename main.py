@@ -45,7 +45,7 @@ heading = None
 maze = None
 isRunning = False
 algoText = None
-
+startBtn = None
 
 def updateTimer():
     global character
@@ -59,7 +59,6 @@ def updateTimer():
 
 
 def updateTitle():
-    print("Hello World")
     global title
     titleArr = title.split(" | Timer: ")
     stepArr = titleArr[0].split("steps: ")
@@ -85,6 +84,7 @@ def start():
     global heading
     global maze
     global isRunning
+    global startBtn
     resetTitle()
     if not character.state and not maze.state:
         resetTitle()
@@ -95,7 +95,9 @@ def start():
         character.start(ALGO_LIST[currentAlgo])
         updateTitle()
         heading.changeText(headingText)
-
+        startBtn.reset()
+    elif not character.state:
+        startBtn.reset()
 
 def turnLeft():
     global character
@@ -124,6 +126,7 @@ def breakText(string, maxLength = 25):
 def switchAlgo():
     global character
     global currentAlgo
+    global startBtn
     global algoText
     if not character.state:
         currentAlgo += 1
@@ -132,6 +135,7 @@ def switchAlgo():
         algoText.changeText(
             f"Algorithm Information:\n{ALGO_LIST[currentAlgo]}\n\n{breakText(ALGO_INFO[ALGO_LIST[currentAlgo]])}")
         resetTitle()
+        startBtn.reset()
     else:
         print("Algorithm cannot be switched when turtle is running")
 
@@ -141,6 +145,7 @@ def main():
     global heading
     global maze
     global algoText
+    global startBtn
     filePath = None
     if (len(sys.argv) == 1):
         print("Using default maze")
@@ -173,7 +178,7 @@ def main():
     maze.draw_map(root)
     # root.textinput("hi",'hi')
     character = Character(
-        canvas=root, x=maze.hashmap['start'][0][0], y=maze.hashmap['start'][0][1], maze=maze, size=maze.size)
+        canvas=root, x=maze.hashmap['start'][0].x, y=maze.hashmap['start'][0].y, maze=maze, size=maze.size)
     instructions = Text("Controls\n1.\n2.\n3.",
                         root, x=maze.endX - maze.size * 4, y=0, bold="normal", fontSize=14, align="right")
     instructions.draw()
@@ -181,10 +186,10 @@ def main():
                     root, x=-maze.endX + maze.size * 2, y=-maze.startY + maze.size, bold="normal", fontSize=14, align="left")
     algoText.draw()
     wallBtn = Button(root, x=-100, y=-250, startShape="square",
-                     text="Turn Left", size=3, clickFunc=turnLeft)
+                     text="Add Wall", size=3, clickFunc=turnLeft)
     wallBtn.draw()
     otherBtn = Button(root, x=100, y=-250, startShape="square",
-                      text="Turn Right", size=3, clickFunc=turnRight)
+                      text="Random Map", size=3, clickFunc=turnRight)
     otherBtn.draw()
     startBtn = Button(root, x=0, y=-250, startShape="turtle", text="START",
                       size=3, clickFunc=start, clickText="RUNNING")

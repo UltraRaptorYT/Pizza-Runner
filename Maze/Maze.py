@@ -1,9 +1,8 @@
+from Maze.Block import Block
 from Maze.Pen import Pen
-import turtle as t
-import networkx as nx
 
-VALID_PATH = ["X","s","e","."]
-G = nx.Graph()
+VALID_PATH = ["X", "s", "e", "."]
+
 
 class Maze:
     def __init__(self,  mapString=None, size=40):
@@ -20,12 +19,12 @@ class Maze:
 
     def upload_map(self, filePath):
         with open(filePath, 'r', encoding="utf8") as f:
-            self.mapString = f.read().strip()                
+            self.mapString = f.read().strip()
             self.rows = len(self.mapString.split("\n"))
             self.columns = len(self.mapString.split("\n")[0])
-        # Ensure that the no of rows and columns are the same throughout
             containsStart = False
             containsEnd = False
+        # Ensure that the no of rows and columns are the same throughout
         for i in range(self.rows):
             if self.columns != len(self.mapString.split("\n")[i]):
                 return "Map have different row / column sizes"
@@ -33,8 +32,12 @@ class Maze:
                 if self.mapString.split("\n")[i][j] not in VALID_PATH:
                     return "Map have invalid character"
                 elif self.mapString.split("\n")[i][j] == "s":
+                    if containsStart:
+                        return "Multiple start found"
                     containsStart = True
                 elif self.mapString.split("\n")[i][j] == "e":
+                    if containsEnd:
+                        return "Multiple end found"
                     containsEnd = True
         self.size = min(48 - max(self.rows, self.columns), 40)
         print(self.size)
@@ -68,23 +71,29 @@ class Maze:
                 currentX = endX + col * self.size
                 blockType = list(
                     self.mapString.split("\n")[row])[col]
-                rowArr.append(blockType)
+                rowArrBlock = Block(row, col, self.size, self.rows, canvas=self.canvas, x=currentX, y=currentY)
                 if blockType == 'X':
                     pen.fillcolor("grey")
-                    self.hashmap["building"].append((currentX, currentY))
-                    G.add_node((row, col), type='building')
+                    rowArrBlock.make_wall()
+                    self.hashmap["building"].append(rowArrBlock)
                 elif blockType == 's':
                     pen.fillcolor("lightgreen")
-                    self.hashmap["start"].append((currentX, currentY))
-                    print(row,col)
+                    rowArrBlock.make_start()
+                    self.hashmap["start"].append(rowArrBlock)
                 elif blockType == 'e':
                     pen.fillcolor("lightblue")
-                    self.hashmap["end"].append((currentX, currentY))
+                    rowArrBlock.make_end()
+                    self.hashmap["end"].append(rowArrBlock)
                 else:
                     pen.fillcolor("white")
-                    self.hashmap["road"].append((currentX, currentY))
+                    self.hashmap["road"].append(rowArrBlock)
+                rowArr.append(rowArrBlock)
                 pen.setpos(currentX, currentY)
                 pen.stamp()
+                # pen.write(f"[{row}, {col}]", align="center")
             self.__mapArr.append(rowArr)
+        for row in range(self.rows):
+            for col in range(self.columns):
+                self.__mapArr[row][col].update_neighbors(self.__mapArr)
         self.state = False
         return

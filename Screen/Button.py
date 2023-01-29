@@ -49,6 +49,10 @@ class Button(RawTurtle):
         self.write(self.clickText, align='center')
         if self.clickFunc != None:
             self.clickFunc()
+        self.reset()
+        return
+
+    def reset(self):
         self.fillcolor(self.startColor)
         self.clear()
         self.write(self.text, align='center')
