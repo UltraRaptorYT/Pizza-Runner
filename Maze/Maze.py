@@ -71,7 +71,8 @@ class Maze:
                 currentX = endX + col * self.size
                 blockType = list(
                     self.mapString.split("\n")[row])[col]
-                rowArrBlock = Block(row, col, self.size, self.rows, canvas=self.canvas, x=currentX, y=currentY)
+                rowArrBlock = Block(
+                    row, col, self.size, self.rows, self.columns, canvas=self.canvas, x=currentX, y=currentY)
                 if blockType == 'X':
                     pen.fillcolor("grey")
                     rowArrBlock.make_wall()
@@ -90,10 +91,11 @@ class Maze:
                 rowArr.append(rowArrBlock)
                 pen.setpos(currentX, currentY)
                 pen.stamp()
-                # pen.write(f"[{row}, {col}]", align="center")
+                pen.write(f"[{row}, {col}]", align="center")
             self.__mapArr.append(rowArr)
         for row in range(self.rows):
             for col in range(self.columns):
                 self.__mapArr[row][col].update_neighbors(self.__mapArr)
+        print("hi")
         self.state = False
         return

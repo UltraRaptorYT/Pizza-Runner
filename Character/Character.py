@@ -1,6 +1,8 @@
 from turtle import RawTurtle
 import time
-from Algorithm.AStar import Algorithm
+from Algorithm.AStar import AStar
+from Algorithm.BreadthFirstSearch import BreadthFirstSearch
+from Algorithm.DepthFirstSearch import DepthFirstSearch
 
 # Mapping Directions
 DIRECTION_MAP = {
@@ -131,6 +133,17 @@ class Character(RawTurtle):
     # Update state of character
     def updateState(self, newState=None):
         print(self.state)
+        # Arrows Key
+        self.canvas.onkey(None, "Left")
+        self.canvas.onkey(None, "Right")
+        self.canvas.onkey(None, "Up")
+        self.canvas.onkey(None, "Down")
+        # WASD Key
+        self.canvas.onkey(None, "a")
+        self.canvas.onkey(None, "d")
+        self.canvas.onkey(None, "w")
+        self.canvas.onkey(None, "s")
+        self.canvas.onkeypress(None, "p")
         if not newState is None:
             self.state = newState
         else:
@@ -150,8 +163,8 @@ class Character(RawTurtle):
             return
 
     # Start button setting the default algorithm to Left Hand Rule
-    def start(self, algorithm="Left Hand Rule"):
-        if self.pos() != (self.startX, self.startY):
+    def start(self, algorithm="Left Hand Rule", firstTime = False):
+        if self.pos() != (self.startX, self.startY) or not firstTime:
             self.reset_everything()
             time.sleep(0.5)
         self.shapesize(self.size / 40)
@@ -222,12 +235,18 @@ class Character(RawTurtle):
             if self.checkAdj()[1]:
                 self.move.append(self.goForward)
         elif algorithm == "Breadth First Search":
-            pass
+            algo = BreadthFirstSearch(self)
+            self.move = algo.start(
+                self.maze.hashmap['start'][0], self.maze.hashmap['end'][0])
+        elif algorithm == "Depth First Search":
+            algo = DepthFirstSearch(self)
+            self.move = algo.start(
+                self.maze.hashmap['start'][0], self.maze.hashmap['end'][0])
         # Switch to Free Roam
         elif algorithm == "Free Roam":
             self.__roam = True
             self.pendown()
-            while not self.maze.get_mapArr()[self.currentIndex[0]][self.currentIndex[1]].is_end():
+            while not self.maze.get_mapArr()[self.currentIndex[0]][self.currentIndex[1]].is_end() and self.state:
                 print(self.maze.get_mapArr()[
                       self.currentIndex[0]][self.currentIndex[1]].is_end())
                 directionList = list(INDEX_MAP.keys())
@@ -243,17 +262,7 @@ class Character(RawTurtle):
                 self.canvas.onkey(self.moveDown, "s")
                 self.canvas.onkey(self.updateState, "p")
                 if not self.state:
-                    # Arrows Key
-                    self.canvas.onkey(None, "Left")
-                    self.canvas.onkey(None, "Right")
-                    self.canvas.onkey(None, "Up")
-                    self.canvas.onkey(None, "Down")
-                    # WASD Key
-                    self.canvas.onkey(None, "a")
-                    self.canvas.onkey(None, "d")
-                    self.canvas.onkey(None, "w")
-                    self.canvas.onkey(None, "s")
-                    self.canvas.onkeypress(None, "p")
+                    self.penup()
                     break
                 self.canvas.listen()
                 self.canvas.mainloop()
@@ -266,7 +275,22 @@ class Character(RawTurtle):
             for steps in self.move:
                 steps()
             self.penup()
+        elif not self.__roam and algorithm in ["Breadth First Search", "Depth First Search"]:
+            self.setheading(0)
+            self.facing = DIRECTION_MAP[self.heading()]
+            self.pendown()
+            self.currentIndex = [int((self.maze.startY - self.y) /
+                                     self.size), int((self.x - self.maze.endX)/self.size)]
+            path = self.move
+            self.move = []
+            for pathBlock in path:
+                if pathBlock.is_end() or pathBlock.is_start():
+                    continue
+                pathBlock.make_path()
+                pathBlock.draw()
+                time.sleep(0.01) 
         self.state = False
+        self.penup()
         return
     # Resetting state of maze and turtle
 

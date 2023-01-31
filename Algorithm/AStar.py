@@ -5,5 +5,5 @@ class AStar(Algorithm):
     super().__init__(character)
 
   # Overloading Abstraction Function
-  def start(self):
+  def start(self, start, end):
     return

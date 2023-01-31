@@ -46,6 +46,7 @@ maze = None
 isRunning = False
 algoText = None
 startBtn = None
+firstTime = True
 
 def updateTimer():
     global character
@@ -85,6 +86,7 @@ def start():
     global maze
     global isRunning
     global startBtn
+    global firstTime
     resetTitle()
     if not character.state and not maze.state:
         resetTitle()
@@ -92,12 +94,13 @@ def start():
         heading.changeText(headingText + " " + ALGO_LIST[currentAlgo])
         if not isRunning:
             updateTimer()
-        character.start(ALGO_LIST[currentAlgo])
+        character.start(ALGO_LIST[currentAlgo], firstTime)
         updateTitle()
         heading.changeText(headingText)
         startBtn.reset()
     elif not character.state:
         startBtn.reset()
+    firstTime = False
 
 def turnLeft():
     global character
