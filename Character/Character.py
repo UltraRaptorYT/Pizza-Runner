@@ -20,6 +20,7 @@ INDEX_MAP = {
     "SOUTH": (1, 0)
 }
 
+
 class Character(RawTurtle):
     def __init__(self, maze, canvas=None, x=0, y=0, size=40):
         super().__init__(canvas)
@@ -152,6 +153,7 @@ class Character(RawTurtle):
 
     # Color block
     def colorCell(self, index, colorFunc=None):
+        time.sleep(0.01)
         block = self.maze.get_mapArr()[index[0]][index[1]]
         if colorFunc:
             eval(f"block.{colorFunc}()")
@@ -163,7 +165,7 @@ class Character(RawTurtle):
             return
 
     # Start button setting the default algorithm to Left Hand Rule
-    def start(self, algorithm="Left Hand Rule", firstTime = False):
+    def start(self, algorithm="Left Hand Rule", firstTime=False):
         if self.pos() != (self.startX, self.startY) or not firstTime:
             self.reset_everything()
             time.sleep(0.5)
@@ -177,6 +179,7 @@ class Character(RawTurtle):
         self.move = []
         self.__roam = False
         print(self.currentIndex)
+        self.hideturtle()
         if algorithm == "Left Hand Rule":
             while not self.checkAdj()[1]:
                 if len(self.seen) > 0 and self.currentIndex == [int((self.maze.startY - self.y) /
@@ -246,6 +249,7 @@ class Character(RawTurtle):
         elif algorithm == "Free Roam":
             self.__roam = True
             self.pendown()
+            self.showturtle()
             while not self.maze.get_mapArr()[self.currentIndex[0]][self.currentIndex[1]].is_end() and self.state:
                 print(self.maze.get_mapArr()[
                       self.currentIndex[0]][self.currentIndex[1]].is_end())
@@ -266,6 +270,7 @@ class Character(RawTurtle):
                     break
                 self.canvas.listen()
                 self.canvas.mainloop()
+        self.showturtle()
         if not self.__roam and algorithm in ["Left Hand Rule", "Right Hand Rule"]:
             self.setheading(0)
             self.facing = DIRECTION_MAP[self.heading()]
@@ -274,21 +279,47 @@ class Character(RawTurtle):
                                      self.size), int((self.x - self.maze.endX)/self.size)]
             for steps in self.move:
                 steps()
+                time.sleep(0.01)
             self.penup()
         elif not self.__roam and algorithm in ["Breadth First Search", "Depth First Search"]:
+            self.setheading(0)
+            self.facing = DIRECTION_MAP[self.heading()]
+            self.currentIndex = [int((self.maze.startY - self.y) /
+                                     self.size), int((self.x - self.maze.endX)/self.size)]
+            path = self.move
+            self.move = []
+            currentBlock = path[-1]  # Initialise currentBlock as start
+            for idx, pathBlock in enumerate(path):
+                # self.move()
+                if not pathBlock.is_start():
+                    for [facing, index] in INDEX_MAP.items():
+                        if [currentBlock.row + index[0],
+                            currentBlock.col + index[1]] == [path[len(path) - 2 - idx].row,
+                                                             path[len(path) - 2 - idx].col]:
+                            while list(INDEX_MAP.keys()).index(self.facing) != list(INDEX_MAP.keys()).index(facing):
+                                diff = list(INDEX_MAP.keys()).index(facing) - list(INDEX_MAP.keys()).index(self.facing)
+                                if (diff > 0 and diff != len(INDEX_MAP.keys()) - 1) or diff == -(len(INDEX_MAP.keys()) - 1):
+                                    self.turnLeft()
+                                    self.move.append(self.turnLeft)
+                                else:
+                                    self.turnRight()
+                                    self.move.append(self.turnRight)
+                            currentBlock = path[len(path) - 2 - idx]
+                            self.move.append(self.goForward)
+                if pathBlock.is_end() or pathBlock.is_start():
+                    continue
+                pathBlock.make_path()
+                pathBlock.draw()
+                time.sleep(0.01)
             self.setheading(0)
             self.facing = DIRECTION_MAP[self.heading()]
             self.pendown()
             self.currentIndex = [int((self.maze.startY - self.y) /
                                      self.size), int((self.x - self.maze.endX)/self.size)]
-            path = self.move
-            self.move = []
-            for pathBlock in path:
-                if pathBlock.is_end() or pathBlock.is_start():
-                    continue
-                pathBlock.make_path()
-                pathBlock.draw()
-                time.sleep(0.01) 
+            for steps in self.move:
+                steps()
+                time.sleep(0.01)
+            self.penup()
         self.state = False
         self.penup()
         return

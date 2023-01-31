@@ -10,13 +10,7 @@ class BreadthFirstSearch(Algorithm):
     currentGrid = None
     while not self.frontier.isEmpty():
       currentGrid = self.frontier.remove()
-      # print(currentGrid.row, currentGrid.col)
-      if currentGrid.row == 5 and currentGrid.col == 7:
-        print(currentGrid.neighbors)
-        for neighbor in currentGrid.neighbors:
-          print(neighbor.row, neighbor.col)
       if currentGrid in self.seen:
-        # print("in seen")
         continue
       if currentGrid.is_end(): # Code this later
         path = [currentGrid]
