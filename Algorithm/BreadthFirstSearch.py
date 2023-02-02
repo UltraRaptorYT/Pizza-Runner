@@ -12,7 +12,6 @@ class BreadthFirstSearch(Algorithm):
       currentGrid = self.frontier.remove()
       # print(currentGrid.row, currentGrid.col)
       if currentGrid in self.seen:
-        # print("in seen")
         continue
       if currentGrid.is_end(): # Code this later
         path = [currentGrid]
