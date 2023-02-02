@@ -1,4 +1,5 @@
 from Algorithm.Queue import Queue
+
 class Algorithm:
   def __init__(self, character):
     self.character = character

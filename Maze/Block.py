@@ -1,6 +1,5 @@
 from Maze.Pen import Pen
 
-
 class Block:
     def __init__(self, row, col, size, total_rows, total_cols, canvas, x=None, y=None):
         self.row = row
@@ -16,6 +15,7 @@ class Block:
         self.parent = None
         self.g_score = float('inf')
         self.f_score = float('inf')
+        
     def get_pos(self):
         return self.row, self.col
 

@@ -14,7 +14,7 @@ class AStar(Algorithm):
       if nodes.f_score < winner.f_score:
         winner = nodes
     return winner
-
+  
   # Overloading Abstraction Function
   def start(self, start, end):
     self.frontier = [start]
@@ -42,10 +42,12 @@ class AStar(Algorithm):
           neighbor.g_score = temp_g
           neighbor.f_score = self.heuristic(neighbor, end) + neighbor.g_score
           self.frontier.append(neighbor)
+          neighbor.parent = currentGrid
         elif temp_g < neighbor.g_score:
           neighbor.g_score = temp_g
           neighbor.f_score = self.heuristic(neighbor, end) + neighbor.g_score
           neighbor.parent = currentGrid
+          print("hi")
       time.sleep(0.01)
     if len(self.frontier) > 0:
       print("Invalid Maze")

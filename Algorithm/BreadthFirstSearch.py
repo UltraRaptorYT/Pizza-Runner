@@ -1,5 +1,6 @@
 from Algorithm.Algorithm import Algorithm
 import time
+
 class BreadthFirstSearch(Algorithm):
   def __init__(self, character):
     super().__init__(character)
