@@ -242,6 +242,10 @@ class Character(RawTurtle):
             algo = DepthFirstSearch(self)
             self.move = algo.start(
                 self.maze.hashmap['start'][0], self.maze.hashmap['end'][0])
+        elif algorithm == "A* Search":
+            algo = AStar(self)
+            self.move = algo.start(
+                self.maze.hashmap['start'][0], self.maze.hashmap['end'][0])
         # Switch to Free Roam
         elif algorithm == "Free Roam":
             self.__roam = True
@@ -275,7 +279,7 @@ class Character(RawTurtle):
             for steps in self.move:
                 steps()
             self.penup()
-        elif not self.__roam and algorithm in ["Breadth First Search", "Depth First Search"]:
+        elif not self.__roam and algorithm in ["Breadth First Search", "Depth First Search", "A* Search"]:
             self.setheading(0)
             self.facing = DIRECTION_MAP[self.heading()]
             self.pendown()

@@ -14,7 +14,8 @@ class Block:
         self.total_cols = total_cols
         self.canvas = canvas
         self.parent = None
-
+        self.g_score = float('inf')
+        self.f_score = float('inf')
     def get_pos(self):
         return self.row, self.col
 
@@ -53,7 +54,7 @@ class Block:
 
     def make_path(self):
         self.color = "orange"
-
+    
     def draw(self):
         pen = Pen(canvas=self.canvas, tile_size=self.size)
         pen.speed("fastest")
