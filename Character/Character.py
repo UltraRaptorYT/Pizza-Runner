@@ -3,6 +3,7 @@ import time
 from Algorithm.AStar import AStar
 from Algorithm.BreadthFirstSearch import BreadthFirstSearch
 from Algorithm.DepthFirstSearch import DepthFirstSearch
+from Algorithm.Greedy import Greedy
 
 # Mapping Directions
 DIRECTION_MAP = {
@@ -249,6 +250,10 @@ class Character(RawTurtle):
             algo = AStar(self)
             self.move = algo.start(
                 self.maze.hashmap['start'][0], self.maze.hashmap['end'][0])
+        elif algorithm == "Greedy Best First Search":
+            algo = Greedy(self)
+            self.move = algo.start(
+                self.maze.hashmap['start'][0], self.maze.hashmap['end'][0])
         # Switch to Free Roam
         elif algorithm == "Free Roam":
             self.__roam = True
@@ -285,7 +290,7 @@ class Character(RawTurtle):
                 steps()
                 time.sleep(0.01)
             self.penup()
-        elif not self.__roam and algorithm in ["Breadth First Search", "Depth First Search", "A* Search"]:
+        elif not self.__roam and algorithm in ["Breadth First Search", "Depth First Search", "A* Search", "Greedy Best First Search"]:
             self.setheading(0)
             self.facing = DIRECTION_MAP[self.heading()]
             self.currentIndex = [int((self.maze.startY - self.y) /
