@@ -11,7 +11,6 @@ class BreadthFirstSearch(Algorithm):
     currentGrid = None
     while not self.frontier.isEmpty():
       currentGrid = self.frontier.remove()
-      # print(currentGrid.row, currentGrid.col)
       if currentGrid in self.seen:
         continue
       if currentGrid.is_end(): # Code this later

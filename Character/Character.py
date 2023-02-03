@@ -43,8 +43,6 @@ class Character(RawTurtle):
         self.startY = y
         self.currentIndex = [int((self.maze.startY - self.y) /
                              self.size), int((self.x - self.maze.endX)/self.size)]
-        print(self.currentIndex)
-        print(self.facing)
         self.state = False
         self.step = 0
 
@@ -52,12 +50,10 @@ class Character(RawTurtle):
     def turnLeft(self):
         self.left(90)
         self.facing = DIRECTION_MAP[self.heading()]
-        print(self.facing)
 
     def turnRight(self):
         self.right(90)
         self.facing = DIRECTION_MAP[self.heading()]
-        print(self.facing)
 
     def goForward(self):
         validPath, isEnd = self.checkAdj()
@@ -134,7 +130,6 @@ class Character(RawTurtle):
 
     # Update state of character
     def updateState(self, newState=None):
-        print(self.state)
         # Arrows Key
         self.canvas.onkey(None, "Left")
         self.canvas.onkey(None, "Right")
@@ -173,13 +168,10 @@ class Character(RawTurtle):
         self.shapesize(self.size / 40)
         self.step = 0
         self.algorithm = algorithm
-        exploredNum = 0  # No. of explored path
-        print(self.algorithm)
         self.seen = []
         self.state = True
         self.move = []
-        self.__roam = False
-        print(self.currentIndex)
+        self.__roam = False 
         self.hideturtle()
         if algorithm == "Left Hand Rule":
             while not self.checkAdj()[1]:
@@ -260,8 +252,6 @@ class Character(RawTurtle):
             self.pendown()
             self.showturtle()
             while not self.maze.get_mapArr()[self.currentIndex[0]][self.currentIndex[1]].is_end() and self.state:
-                print(self.maze.get_mapArr()[
-                      self.currentIndex[0]][self.currentIndex[1]].is_end())
                 directionList = list(INDEX_MAP.keys())
                 # Arrows Key
                 self.canvas.onkey(self.moveLeft, "Left")
@@ -348,4 +338,3 @@ class Character(RawTurtle):
         self.facing = DIRECTION_MAP[self.heading()]
         self.maze.reset()
         self.showturtle()
-        print(self.currentIndex)

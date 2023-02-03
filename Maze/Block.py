@@ -65,7 +65,6 @@ class Block:
         return
 
     def update_neighbors(self, grid):
-        # print(self.total_cols)
         self.neighbors = []
         # DOWN
         if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_wall():

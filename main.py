@@ -102,11 +102,12 @@ def start():
         startBtn.reset()
     firstTime = False
 
+# ! to be removed
 def turnLeft():
     global character
     character.turnLeft()
 
-
+# ! to be removed
 def turnRight():
     global character
     character.turnRight()
@@ -143,6 +144,12 @@ def switchAlgo():
         print("Algorithm cannot be switched when turtle is running")
 
 
+def generate_maze():
+    global maze
+    rows = root.textinput("Enter total number of rows", 'Enter total number of rows')
+    cols = root.textinput("Enter total number of cols", 'Enter total number of cols')
+
+
 def main():
     global character
     global heading
@@ -150,28 +157,36 @@ def main():
     global algoText
     global startBtn
     filePath = None
+    random = False
     if (len(sys.argv) == 1):
         print("Using default maze")
         filePath = "example.txt"
     if not filePath:
         txtFile = sys.argv[1]
-        if txtFile[-4:] != ".txt":
+        if txtFile == "random":
+            print("Generating random map")
+            random = True
+        elif txtFile[-4:] != ".txt":
             print("Invalid file type")
             return
         filePath = txtFile
-    if ":\\" not in filePath:
-        filePath = os.path.abspath(
-            os.getcwd()) + "\\" + filePath
-    try:
-        open(filePath, 'r', encoding="utf8")
-    except FileNotFoundError:
-        print("File does not exist! Please try again!")
-        return
+    if not random:
+        if ":\\" not in filePath:
+            filePath = os.path.abspath(
+                os.getcwd()) + "\\" + filePath
+        try:
+            open(filePath, 'r', encoding="utf8")
+        except FileNotFoundError:
+            print("File does not exist! Please try again!")
+            return
     maze = Maze()
-    error = maze.upload_map(filePath)
-    if error:
-        print(f"Map Upload Error: {error}")
-        return
+    if not random:
+        error = maze.upload_map(filePath)
+        if error:
+            print(f"Map Upload Error: {error}")
+            return
+    else:
+        generate_maze()
     heading = Text("PIZZA RUNNERS:", root, x=0,
                    y=285, bold="bold", fontSize=24)
     heading.draw()
@@ -179,7 +194,6 @@ def main():
                   root, x=0, y=250, bold="bold", fontSize=20)
     doneBy.draw()
     maze.draw_map(root)
-    # root.textinput("hi",'hi')
     character = Character(
         canvas=root, x=maze.hashmap['start'][0].x, y=maze.hashmap['start'][0].y, maze=maze, size=maze.size)
     instructions = Text("Controls\n1.\n2.\n3.",
@@ -197,7 +211,6 @@ def main():
     startBtn = Button(root, x=0, y=-250, startShape="turtle", text="START",
                       size=3, clickFunc=start, clickText="RUNNING")
     startBtn.draw()
-    print(filePath)
     root.delay(0)
     root.listen()
     root.onkey(switchAlgo, 'Tab')

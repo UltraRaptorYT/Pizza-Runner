@@ -40,7 +40,6 @@ class Maze:
                         return "Multiple end found"
                     containsEnd = True
         self.size = min(48 - max(self.rows, self.columns), 40)
-        print(self.size)
         if not containsStart:
             return "Missing start point"
         if not containsEnd:
@@ -91,11 +90,13 @@ class Maze:
                 rowArr.append(rowArrBlock)
                 pen.setpos(currentX, currentY)
                 pen.stamp()
-                pen.write(f"[{row}, {col}]", align="center")
+                # pen.write(f"[{row}, {col}]", align="center")
             self.__mapArr.append(rowArr)
         for row in range(self.rows):
             for col in range(self.columns):
                 self.__mapArr[row][col].update_neighbors(self.__mapArr)
-        print("hi")
         self.state = False
         return
+
+    def generate_map(self):
+        print(self)

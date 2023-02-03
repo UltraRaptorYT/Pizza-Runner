@@ -24,7 +24,6 @@ class Greedy(Algorithm):
       if currentGrid.is_end(): # Code this later
         path = [currentGrid]
         while not (currentGrid.row == start.row and currentGrid.col == start.col):
-          print(currentGrid, start, currentGrid.parent)
           path.append(currentGrid.parent)
           currentGrid = currentGrid.parent
         return path
