@@ -90,7 +90,7 @@ class Maze:
                 rowArr.append(rowArrBlock)
                 pen.setpos(currentX, currentY)
                 pen.stamp()
-                # pen.write(f"[{row}, {col}]", align="center")
+                pen.write(f"[{row}, {col}]", align="center")
             self.__mapArr.append(rowArr)
         for row in range(self.rows):
             for col in range(self.columns):

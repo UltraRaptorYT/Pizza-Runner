@@ -47,7 +47,7 @@ class AStar(Algorithm):
           neighbor.f_score = self.heuristic(neighbor, end) + neighbor.g_score
           neighbor.parent = currentGrid
       time.sleep(0.01)
-    if len(self.frontier) > 0:
+    if len(self.frontier) == 0:
       print("Invalid Maze")
     return
   

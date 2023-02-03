@@ -171,12 +171,19 @@ class Character(RawTurtle):
         self.seen = []
         self.state = True
         self.move = []
-        self.__roam = False 
+        self.__roam = False
         self.hideturtle()
         if algorithm == "Left Hand Rule":
+            if len(self.maze.get_mapArr()[
+                      self.currentIndex[0]][self.currentIndex[1]].neighbors) == 4:
+                while self.checkAdj()[0] and not self.checkAdj()[1]:
+                    self.seen.append(self.currentIndex)
+                    self.colorCell(self.checkAdj()[0], "make_path")
+                    self.move.append(self.goForward)
+                    self.currentIndex = self.checkAdj()[0]
             while not self.checkAdj()[1]:
-                if len(self.seen) > 0 and self.currentIndex == [int((self.maze.startY - self.y) /
-                                                                    self.size), int((self.x - self.maze.endX)/self.size)]:
+                if len(self.seen) > 0 and (self.currentIndex == [int((self.maze.startY - self.y) /
+                                                                     self.size), int((self.x - self.maze.endX)/self.size)] or self.seen.count(self.currentIndex) >= 3):
                     break
                 directionList = list(INDEX_MAP.keys())
                 # checkLeft wall
@@ -200,12 +207,20 @@ class Character(RawTurtle):
                         self.move.append(self.turnRight)
                         self.turnRight()
             if self.checkAdj()[1]:
+                self.currentIndex = self.checkAdj()[0]
                 self.move.append(self.goForward)
         # Switching algorithm to Right Hand Rule
         elif algorithm == "Right Hand Rule":
+            if len(self.maze.get_mapArr()[
+                      self.currentIndex[0]][self.currentIndex[1]].neighbors) == 4:
+                while self.checkAdj()[0] and not self.checkAdj()[1]:
+                    self.seen.append(self.currentIndex)
+                    self.colorCell(self.checkAdj()[0], "make_path")
+                    self.move.append(self.goForward)
+                    self.currentIndex = self.checkAdj()[0]
             while not self.checkAdj()[1]:
-                if len(self.seen) > 0 and self.currentIndex == [int((self.maze.startY - self.y) /
-                                                                    self.size), int((self.x - self.maze.endX)/self.size)]:
+                if len(self.seen) > 0 and (self.currentIndex == [int((self.maze.startY - self.y) /
+                                                                    self.size), int((self.x - self.maze.endX)/self.size)] or self.seen.count(self.currentIndex) >= 3):
                     break
                 directionList = list(INDEX_MAP.keys())
                 # checkRight wall
@@ -229,6 +244,7 @@ class Character(RawTurtle):
                         self.move.append(self.turnLeft)
                         self.turnLeft()
             if self.checkAdj()[1]:
+                self.currentIndex = self.checkAdj()[0]
                 self.move.append(self.goForward)
         elif algorithm == "Breadth First Search":
             algo = BreadthFirstSearch(self)
@@ -273,7 +289,13 @@ class Character(RawTurtle):
         if not self.__roam and algorithm in ["Left Hand Rule", "Right Hand Rule"]:
             self.setheading(0)
             self.facing = DIRECTION_MAP[self.heading()]
+            print(self.currentIndex)
             self.pendown()
+            if not self.maze.get_mapArr()[
+                    self.currentIndex[0]][self.currentIndex[1]].is_end():
+                self.state = False
+                print("Invalid Maze")
+                return False
             self.currentIndex = [int((self.maze.startY - self.y) /
                                      self.size), int((self.x - self.maze.endX)/self.size)]
             for steps in self.move:
@@ -286,6 +308,10 @@ class Character(RawTurtle):
             self.currentIndex = [int((self.maze.startY - self.y) /
                                      self.size), int((self.x - self.maze.endX)/self.size)]
             path = self.move
+            if path is None:                
+                self.state = False
+                self.penup()
+                return False
             self.move = []
             currentBlock = path[-1]  # Initialise currentBlock as start
             for idx, pathBlock in enumerate(path):
@@ -296,7 +322,8 @@ class Character(RawTurtle):
                             currentBlock.col + index[1]] == [path[len(path) - 2 - idx].row,
                                                              path[len(path) - 2 - idx].col]:
                             while list(INDEX_MAP.keys()).index(self.facing) != list(INDEX_MAP.keys()).index(facing):
-                                diff = list(INDEX_MAP.keys()).index(facing) - list(INDEX_MAP.keys()).index(self.facing)
+                                diff = list(INDEX_MAP.keys()).index(
+                                    facing) - list(INDEX_MAP.keys()).index(self.facing)
                                 if (diff > 0 and diff != len(INDEX_MAP.keys()) - 1) or diff == -(len(INDEX_MAP.keys()) - 1):
                                     self.turnLeft()
                                     self.move.append(self.turnLeft)
@@ -321,7 +348,7 @@ class Character(RawTurtle):
             self.penup()
         self.state = False
         self.penup()
-        return
+        return True
     # Resetting state of maze and turtle
 
     def reset_everything(self):

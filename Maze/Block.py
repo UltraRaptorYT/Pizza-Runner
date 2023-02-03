@@ -82,5 +82,6 @@ class Block:
         if self.col > 0 and not grid[self.row][self.col - 1].is_wall():
             self.neighbors.append(grid[self.row][self.col - 1])
 
+    # Method  
     def __lt__(self, other):
         return False

@@ -39,7 +39,7 @@ class Greedy(Algorithm):
         self.frontier.append(neighbor)
         neighbor.parent = currentGrid
       time.sleep(0.01)
-    if len(self.frontier) > 0:
+    if len(self.frontier) == 0:
       print("Invalid Maze")
     return
   

@@ -88,15 +88,20 @@ def start():
     global startBtn
     global firstTime
     resetTitle()
+    headingText = heading.getText()
+    if " Unsolvable" in headingText:
+        headingText = headingText.split(" Unsolvable")[0]
     if not character.state and not maze.state:
         resetTitle()
-        headingText = heading.getText()
         heading.changeText(headingText + " " + ALGO_LIST[currentAlgo])
         if not isRunning:
             updateTimer()
-        character.start(ALGO_LIST[currentAlgo], firstTime)
+        solvable = character.start(ALGO_LIST[currentAlgo], firstTime)
         updateTitle()
-        heading.changeText(headingText)
+        if solvable:
+            heading.changeText(headingText)
+        else:
+            heading.changeText(headingText + " Unsolvable")
         startBtn.reset()
     elif not character.state:
         startBtn.reset()
