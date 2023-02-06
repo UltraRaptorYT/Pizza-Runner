@@ -148,12 +148,50 @@ def switchAlgo():
     else:
         print("Algorithm cannot be switched when turtle is running")
 
+def save_maze():
+    global maze
+    fileMsg = "Enter save filename/filepath"
+    while True:
+        filePath = root.textinput(fileMsg, "Enter save filename/filepath")
+        if filePath[-4:] != ".txt":
+            fileMsg = "Invalid filename/filepath! Enter save filename/filepath"
+            continue
+        if ":\\" not in filePath:
+            filePath = os.path.abspath(
+                os.getcwd()) + "\\" + filePath
+        break
+    maze.saveFile(filePath)
+    return 
 
 def generate_maze():
     global maze
-    rows = root.textinput("Enter total number of rows", 'Enter total number of rows')
-    cols = root.textinput("Enter total number of cols", 'Enter total number of cols')
+    rows, cols = getRowsAndCols()
+    maze.generate_maze(rows, cols, root)
 
+def getRowsAndCols():
+    rowsMsg = "Enter total number of rows"
+    while True:
+        try:
+            rows = root.textinput(rowsMsg, rowsMsg)
+            rows = int(rows)
+            if rows > 4:
+                break
+            else:
+                rowsMsg = "Row number must be more than 4! Enter total number of rows"
+        except ValueError:
+            rowsMsg = "Invalid row number! Enter total number of rows"
+    colsMsg = "Enter total number of cols"
+    while True:
+        try:
+            cols = root.textinput(colsMsg, colsMsg)
+            cols = int(cols)
+            if cols > 4:
+                break
+            else:
+                colsMsg = "Col number must be more than 4! Enter total number of cols"
+        except ValueError:
+            colsMsg = "Invalid col number! Enter total number of cols"
+    return rows, cols
 
 def main():
     global character
@@ -184,7 +222,7 @@ def main():
         except FileNotFoundError:
             print("File does not exist! Please try again!")
             return
-    maze = Maze()
+    maze = Maze(root)
     if not random:
         error = maze.upload_map(filePath)
         if error:
@@ -208,13 +246,16 @@ def main():
                     root, x=-maze.endX + maze.size * 2, y=-maze.startY + maze.size, bold="normal", fontSize=14, align="left")
     algoText.draw()
     wallBtn = Button(root, x=-100, y=-250, startShape="square",
-                     text="Add Wall", size=3, clickFunc=turnLeft)
+                     text="Add Wall", size=3.25, clickFunc=turnLeft)
     wallBtn.draw()
-    otherBtn = Button(root, x=100, y=-250, startShape="square",
-                      text="Random Map", size=3, clickFunc=turnRight)
-    otherBtn.draw()
+    randomMapBtn = Button(root, x=100, y=-250, startShape="square",
+                      text="Generate\nRandom Map", size=3.25, clickFunc=generate_maze)
+    randomMapBtn.draw()
+    saveMapBtn = Button(root, x=200, y=-250, startShape="square",
+                      text="Save Map", size=3.25, clickFunc=save_maze)
+    saveMapBtn.draw()
     startBtn = Button(root, x=0, y=-250, startShape="turtle", text="START",
-                      size=3, clickFunc=start, clickText="RUNNING")
+                      size=3.25, clickFunc=start, clickText="RUNNING")
     startBtn.draw()
     root.delay(0)
     root.listen()

@@ -20,7 +20,7 @@ class Block:
         return self.row, self.col
 
     def is_closed(self):
-        return self.color == "red"
+        return self.color == "white"
 
     def is_open(self):
         return self.color == "yellow"
@@ -64,24 +64,45 @@ class Block:
         pen.stamp()
         return
 
-    def update_neighbors(self, grid):
+    def update_neighbors(self, grid, ignore_walls=False):
         self.neighbors = []
         # DOWN
-        if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_wall():
+        if (self.row < self.total_rows - 1 and ignore_walls) or (self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_wall()):
             self.neighbors.append(grid[self.row + 1][self.col])
 
         # UP
-        if self.row > 0 and not grid[self.row - 1][self.col].is_wall():
+        if (self.row > 0 and ignore_walls) or (self.row > 0 and not grid[self.row - 1][self.col].is_wall()):
             self.neighbors.append(grid[self.row - 1][self.col])
 
         # RIGHT
-        if self.col < self.total_cols - 1 and not grid[self.row][self.col + 1].is_wall():
+        if (self.col < self.total_cols - 1 and ignore_walls) or (self.col < self.total_cols - 1 and not grid[self.row][self.col + 1].is_wall()):
             self.neighbors.append(grid[self.row][self.col + 1])
 
         # LEFT
-        if self.col > 0 and not grid[self.row][self.col - 1].is_wall():
+        if (self.col > 0 and ignore_walls) or (self.col > 0 and not grid[self.row][self.col - 1].is_wall()):
             self.neighbors.append(grid[self.row][self.col - 1])
 
-    # Method  
+    def update_frontiers(self, grid):
+        self.frontiers = []
+        # DOWN
+        if self.row < self.total_rows - 2 and grid[self.row + 2][self.col].is_wall():
+            self.frontiers.append(grid[self.row + 2][self.col])
+
+        #UP
+        if self.row > 1 and grid[self.row - 2][self.col].is_wall():
+            self.frontiers.append(grid[self.row - 2][self.col])
+
+        # RIGHT
+        if self.col < self.total_cols - 2 and grid[self.row][self.col + 2].is_wall():
+            self.frontiers.append(grid[self.row][self.col + 2])
+
+        # LEFT
+        if self.col > 1 and grid[self.row][self.col - 2].is_wall():
+            self.frontiers.append(grid[self.row][self.col - 2])
+    
+    # Method overloading
     def __lt__(self, other):
         return False
+
+    def __str__(self):
+        return str([self.row, self.col])

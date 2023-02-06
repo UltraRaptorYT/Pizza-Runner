@@ -71,11 +71,12 @@ class Character(RawTurtle):
         elif self.facing == "SOUTH":
             self.turnRight()
         elif self.facing == "EAST":
-            self.left(90)
+            self.turnLeft()
             self.turnLeft()
         elif self.facing == "WEST":
             self.facing = DIRECTION_MAP[self.heading()]
         self.goForward()
+        time.sleep(0.1)
 
     def moveRight(self):
         if self.facing == "NORTH":
@@ -83,35 +84,38 @@ class Character(RawTurtle):
         elif self.facing == "SOUTH":
             self.turnLeft()
         elif self.facing == "WEST":
-            self.right(90)
+            self.turnRight()
             self.turnRight()
         elif self.facing == "EAST":
             self.facing = DIRECTION_MAP[self.heading()]
         self.goForward()
+        time.sleep(0.1)
 
     def moveForward(self):
         if self.facing == "EAST":
             self.turnLeft()
         elif self.facing == "SOUTH":
-            self.left(90)
+            self.turnLeft()
             self.turnLeft()
         elif self.facing == "WEST":
             self.turnRight()
         elif self.facing == "NORTH":
             self.facing = DIRECTION_MAP[self.heading()]
         self.goForward()
+        time.sleep(0.1)
 
     def moveDown(self):
         if self.facing == "EAST":
             self.turnRight()
         elif self.facing == "NORTH":
-            self.right(90)
+            self.turnRight()
             self.turnRight()
         elif self.facing == "WEST":
             self.turnLeft()
         elif self.facing == "SOUTH":
             self.facing = DIRECTION_MAP[self.heading()]
         self.goForward()
+        time.sleep(0.1)
 
     # Checking for walls
     def checkAdj(self, direction=None):
@@ -120,13 +124,17 @@ class Character(RawTurtle):
         movingIndex = list(self.currentIndex)
         movingIndex[0] += INDEX_MAP[direction][0]
         movingIndex[1] += INDEX_MAP[direction][1]
-        checkTile = self.maze.get_mapArr()[movingIndex[0]][movingIndex[1]]
-        if checkTile.is_wall():
+        try:
+            checkTile = self.maze.get_mapArr()[movingIndex[0]][movingIndex[1]]
+            if checkTile.is_wall():
+                return [False, False]
+            elif checkTile.is_end():
+                return [movingIndex, True]
+            else:
+                return [movingIndex, False]
+        except IndexError:
+            print("index")
             return [False, False]
-        elif checkTile.is_end():
-            return [movingIndex, True]
-        else:
-            return [movingIndex, False]
 
     # Update state of character
     def updateState(self, newState=None):
