@@ -1,13 +1,17 @@
 from Algorithm.Algorithm import Algorithm
 import time
+
 class AStar(Algorithm):
   def __init__(self, character):
     super().__init__(character)
+    #Priority Queue
     self.frontier = []
 
+  #Calculate heuristic
   def heuristic(self, node, end):
     return abs(node.row - end.row) + abs(node.col - end.col)
   
+  #Returns node from the open list with the lowest f score
   def lowestFScore(self, openset):
     winner = openset[0]
     for nodes in openset:
@@ -25,7 +29,7 @@ class AStar(Algorithm):
       currentGrid.update_neighbors(self.character.maze.get_mapArr())
       if not self.character.state:
           return
-      if currentGrid.is_end(): # Code this later
+      if currentGrid.is_end(): 
         path = [currentGrid]
         while not (currentGrid.row == start.row and currentGrid.col == start.col):
           path.append(currentGrid.parent)
