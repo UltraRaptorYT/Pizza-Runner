@@ -55,17 +55,20 @@ class Maze:
 
     def reset(self):
         self.pen.clearstamps()
-        self.__generate_mapString()
+        self.generate_mapString()
         for row in range(self.rows):
             for col in range(self.columns):
                 if self.__mapArr[row][col].is_open() or self.__mapArr[row][col].is_path():
                     self.__mapArr[row][col].reset()
-                    print("hi")
                     self.__mapArr[row][col].clear_stamps()
         self.draw_map(self.canvas)
         return
 
     def draw_map(self, canvas=None):
+        self.hashmap["building"] = []
+        self.hashmap["start"] = []
+        self.hashmap["end"] = []
+        self.hashmap["road"] = []
         if canvas == None:
             self.canvas = canvas
         self.size = min(48 - max(self.rows, self.columns), 40)
@@ -102,7 +105,6 @@ class Maze:
                 rowArr.append(rowArrBlock)
                 self.pen.setpos(currentX, currentY)
                 self.pen.stamp()
-                # self.pen.write(f"[{row}, {col}]", align="center")
             self.__mapArr.append(rowArr)
         for row in range(self.rows):
             for col in range(self.columns):
@@ -111,13 +113,13 @@ class Maze:
         return
 
     def saveFile(self, filePath):
-        self.__generate_mapString()
+        self.generate_mapString()
         with open(filePath, "w") as f:
             f.write(self.__mapString)
             f.close()
         return
 
-    def __generate_mapString(self):
+    def generate_mapString(self):
         textArr = []
         for row in range(self.rows):
             rowArr = []
@@ -141,9 +143,12 @@ class Maze:
         return self.__mapString
 
     def generate_maze(self, rows, cols, canvas):
-        for row in range(self.rows):
-            for col in range(self.columns):
-                self.__mapArr[row][col].clear_stamps()
+        try:       
+            for row in range(self.rows):
+                for col in range(self.columns):
+                    self.__mapArr[row][col].clear_stamps()
+        except AttributeError:
+            pass
         self.columns = cols
         self.rows = rows
         self.canvas = canvas
@@ -203,6 +208,35 @@ class Maze:
             endBlock = self.__mapArr[endRow][endCol]
         endBlock.make_end()
         self.hashmap["end"] = [endBlock]
-        self.__generate_mapString()
+        self.generate_mapString()
         
 
+    def custom_map(self, rows, cols, canvas):
+        try:       
+            for row in range(self.rows):
+                for col in range(self.columns):
+                    self.__mapArr[row][col].clear_stamps()
+        except AttributeError:
+            pass
+        self.columns = cols
+        self.rows = rows
+        self.canvas = canvas
+        self.size = min(48 - max(self.rows, self.columns), 40)
+        endX = -(self.columns * self.size / 2)
+        startY = self.rows * self.size / 2
+        self.endX = endX
+        self.startY = startY
+        self.state = True
+        self.__mapArr = []
+        for row in range(self.rows):
+            currentY = startY - row * self.size
+            rowArr = []
+            for col in range(self.columns):
+                currentX = endX + col * self.size
+                rowArrBlock = Block(
+                    row, col, self.size, self.rows, self.columns, canvas=self.canvas, x=currentX, y=currentY)
+                rowArrBlock.make_open()
+                rowArr.append(rowArrBlock)
+            self.__mapArr.append(rowArr)
+        self.generate_mapString()
+        return

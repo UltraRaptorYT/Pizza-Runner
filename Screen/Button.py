@@ -12,7 +12,7 @@ from turtle import RawTurtle
 
 
 class Button(RawTurtle):
-    def __init__(self, canvas=None, x=0, y=0, text="", startShape="square", size=2, startColor="lightgreen", clickColor="green", clickFunc=None, clickText =None):
+    def __init__(self, canvas=None, x=0, y=0, text="", startShape="square", size=2, startColor="lightgreen", clickColor="green", clickFunc=None, clickText=None, toggle=False, toggleFunc=None):
         super().__init__(canvas)
         self.canvas = canvas
         self.shapeSize = size
@@ -23,6 +23,10 @@ class Button(RawTurtle):
         self.clickColor = clickColor
         self.clickFunc = clickFunc
         self.text = text
+        self.toggle = toggle
+        if self.toggle:
+            self.toggleState = False
+            self.toggleFunc = toggleFunc
         if clickText:
             self.clickText = clickText
         else:
@@ -41,15 +45,50 @@ class Button(RawTurtle):
         self.onclick(self.onClick)
         self.setheading(90)
         self.showturtle()
+        self.clear()
         self.write(self.text, align='center')
+        if self.toggle:
+            if self.toggleState:
+                self.fillcolor(self.clickColor)
+                self.clear()
+                self.write(self.clickText, align='center')
+            else:
+                self.fillcolor(self.startColor)
+                self.clear()
+                self.write(self.text, align='center')    
+
+    def updateState(self):
+        if self.toggleState:
+            self.fillcolor(self.clickColor)
+            self.clear()
+            self.write(self.clickText, align='center')
+        else:
+            self.fillcolor(self.startColor)
+            self.clear()
+            self.write(self.text, align='center')    
 
     def onClick(self, x, y):
         self.fillcolor(self.clickColor)
         self.clear()
-        self.write(self.clickText, align='center')
-        if self.clickFunc != None:
-            self.clickFunc()
-        self.reset()
+        if self.toggle:
+            self.toggleState = not self.toggleState
+            if self.toggleState:
+                self.fillcolor(self.clickColor)
+                self.clear()
+                self.write(self.clickText, align='center')
+                if self.clickFunc != None:
+                    self.clickFunc()
+            else:
+                self.fillcolor(self.startColor)
+                self.clear()
+                self.write(self.text, align='center')  
+                if self.toggleFunc != None:
+                    self.toggleFunc()
+        else:
+            self.write(self.clickText, align='center')
+            if self.clickFunc != None:
+                self.clickFunc()
+            self.reset()
         return
 
     def reset(self):

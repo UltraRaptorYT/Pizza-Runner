@@ -47,6 +47,10 @@ isRunning = False
 algoText = None
 startBtn = None
 firstTime = True
+customMapBtn = None
+wallBtn = None
+addStartBtn = None
+addEndBtn = None
 
 def updateTimer():
     global character
@@ -87,6 +91,9 @@ def start():
     global isRunning
     global startBtn
     global firstTime
+    global customMapBtn
+    if customMapBtn.toggleState:
+        return
     resetTitle()
     headingText = heading.getText()
     if " Unsolvable" in headingText:
@@ -107,13 +114,99 @@ def start():
         startBtn.reset()
     firstTime = False
 
-# ! to be removed
-def turnLeft():
+def clickWalls(x, y):
+    global maze
     global character
-    character.turnLeft()
+    global customMapBtn
+    global wallBtn
+    global addStartBtn
+    global addEndBtn
+    # if customMapBtn.toggleState:
+    #     return
+    if character is not None:
+        character.hideturtle()
+    if customMapBtn is not None:
+        if customMapBtn.toggleState:
+            gotRow = False
+            gotCol = False            
+            for row in range(maze.rows):
+                if y < maze.get_mapArr()[row][0].y + maze.size / 2 and y > maze.get_mapArr()[row][0].y - maze.size / 2:
+                    gotRow = True
+                    break
+            for col in range(maze.columns):
+                if x < maze.get_mapArr()[0][col].x + maze.size / 2 and x > maze.get_mapArr()[0][col].x - maze.size / 2:
+                    gotCol = True
+                    break
+            if gotCol and gotRow:
+                if not wallBtn.toggleState:
+                    if addStartBtn.toggleState:
+                        for r in range(maze.rows):
+                            for c in range(maze.columns):
+                                if maze.get_mapArr()[r][c].is_start():
+                                    maze.get_mapArr()[r][c].reset()
+                                    maze.get_mapArr()[r][c].draw()
+                        maze.get_mapArr()[row][col].make_start()  
+                        addStartBtn.toggleState = False
+                        addStartBtn.updateState()
+                    elif addEndBtn.toggleState:
+                        for r in range(maze.rows):
+                            for c in range(maze.columns):
+                                if maze.get_mapArr()[r][c].is_end():
+                                    maze.get_mapArr()[r][c].reset()
+                                    maze.get_mapArr()[r][c].draw()
+                        maze.get_mapArr()[row][col].make_end()    
+                        addEndBtn.toggleState = False
+                        addEndBtn.updateState()
+                    else:
+                        maze.get_mapArr()[row][col].make_wall()
+                else:
+                    maze.get_mapArr()[row][col].reset()
+                maze.get_mapArr()[row][col].draw()
+                maze.generate_mapString()
 
+def make_maze():
+    global maze
+    global character
+    global customMapBtn
+    checkStart = False
+    checkEnd = False
+    for r in range(maze.rows):
+        for c in range(maze.columns):
+            if maze.get_mapArr()[r][c].is_end():
+                checkEnd = True
+            if maze.get_mapArr()[r][c].is_start():
+                checkStart = True
+    if checkStart and checkEnd:
+        maze.draw_map(root)
+        maze.generate_mapString()
+        character = Character(
+            canvas=root, x=maze.hashmap['start'][0].x, y=maze.hashmap['start'][0].y, maze=maze, size=maze.size)
+        character.reset_everything()
+    else:
+        print("No start point/end point found")
+        customMapBtn.toggleState = True
+        customMapBtn.updateState()
+        custom_map()
+    root.onscreenclick(None)
+    root.mainloop()
+                
 def custom_map():
-    print("hi")
+    global maze
+    global character
+    global customMapBtn
+    character.hideturtle()
+    if not maze.state and not character.state:
+        rows, cols = getRowsAndCols(True)
+        maze.custom_map(rows, cols, root)
+        if character is not None:
+            character.reset_everything()
+            character.hideturtle()
+        root.onscreenclick(clickWalls)
+        root.mainloop()
+    else:
+        customMapBtn.toggleState = False
+        customMapBtn.updateState()
+    
 
 def breakText(string, maxLength = 30):
     words = string.split()
@@ -134,16 +227,18 @@ def switchAlgo():
     global currentAlgo
     global startBtn
     global algoText
-    if not character.state:
-        currentAlgo += 1
-        if currentAlgo > len(ALGO_LIST) - 1:
-            currentAlgo = 0
-        algoText.changeText(
-            f"Algorithm Information:\n{ALGO_LIST[currentAlgo]}\n\n{breakText(ALGO_INFO[ALGO_LIST[currentAlgo]])}")
-        resetTitle()
-        startBtn.reset()
-    else:
-        print("Algorithm cannot be switched when turtle is running")
+    global customMapBtn
+    if not customMapBtn.toggleState:
+        if not character.state:
+            currentAlgo += 1
+            if currentAlgo > len(ALGO_LIST) - 1:
+                currentAlgo = 0
+            algoText.changeText(
+                f"Algorithm Information:\n{ALGO_LIST[currentAlgo]}\n\n{breakText(ALGO_INFO[ALGO_LIST[currentAlgo]])}")
+            resetTitle()
+            startBtn.reset()
+        else:
+            print("Algorithm cannot be switched when turtle is running")
 
 def save_maze():
     global maze
@@ -163,22 +258,29 @@ def save_maze():
 def generate_maze():
     global maze
     global character
-    if not maze.state and not character.state:
+    try:
+        if not maze.state and not character.state:
+            rows, cols = getRowsAndCols()
+            maze.generate_maze(rows, cols, root)
+            if character is not None:
+                character.reset_everything()
+    except AttributeError:
         rows, cols = getRowsAndCols()
         maze.generate_maze(rows, cols, root)
-        if character is not None:
-            character.reset_everything()
 
-def getRowsAndCols():
+def getRowsAndCols(allowEven = False):
     rowsMsg = "Enter total number of rows"
     while True:
         try:
             rows = root.textinput(rowsMsg, rowsMsg)
             rows = int(rows)
-            if rows > 4 and rows % 2 != 0:
-                break
+            if rows >= 5 and rows <= 60:
+                if allowEven or rows % 2 != 0:
+                    break
+                else:
+                    rowsMsg = "Row number must be odd! Enter total number of rows"    
             else:
-                rowsMsg = "Row number must be at least 5, must be odd and whole number! Enter total number of rows"
+                rowsMsg = "Row number must be between 5 to 60! Enter total number of rows"
         except ValueError:
             rowsMsg = "Invalid row number! Enter total number of rows"
     colsMsg = "Enter total number of cols"
@@ -186,13 +288,49 @@ def getRowsAndCols():
         try:
             cols = root.textinput(colsMsg, colsMsg)
             cols = int(cols)
-            if cols > 4 and cols % 2 != 0:
-                break
+            if cols >= 5 and cols <= 60:
+                if allowEven or cols % 2 != 0:
+                    break
+                else:
+                    colsMsg = "Col number must be odd! Enter total number of cols"    
             else:
-                colsMsg = "Col number must be at least 5, must be odd and whole number! Enter total number of cols"
+                colsMsg = "Col number must be between 5 to 60! Enter total number of cols"
         except ValueError:
             colsMsg = "Invalid col number! Enter total number of cols"
     return rows, cols
+
+def addWall():
+    global addStartBtn
+    global addEndBtn
+    global wallBtn
+    if addStartBtn.toggleState:
+        addStartBtn.toggleState = False
+        addStartBtn.updateState()
+    if addEndBtn.toggleState:
+        addEndBtn.toggleState = False
+        addEndBtn.updateState()
+
+def addEnd():
+    global addStartBtn
+    global addEndBtn
+    global wallBtn
+    if addStartBtn.toggleState:
+        addStartBtn.toggleState = False
+        addStartBtn.updateState()
+    if wallBtn.toggleState:
+        wallBtn.toggleState = False
+        wallBtn.updateState()
+
+def addStart():
+    global addStartBtn
+    global addEndBtn
+    global wallBtn
+    if addEndBtn.toggleState:
+        addEndBtn.toggleState = False
+        addEndBtn.updateState()
+    if wallBtn.toggleState:
+        wallBtn.toggleState = False
+        wallBtn.updateState()
 
 def main():
     global character
@@ -200,6 +338,10 @@ def main():
     global maze
     global algoText
     global startBtn
+    global customMapBtn
+    global wallBtn
+    global addStartBtn
+    global addEndBtn
     filePath = None
     random = False
     if (len(sys.argv) == 1):
@@ -229,7 +371,7 @@ def main():
         if error:
             print(f"Map Upload Error: {error}")
             return
-    else:
+    elif random:
         generate_maze()
     heading = Text("PIZZA RUNNERS:", root, x=0,
                    y=285, bold="bold", fontSize=24)
@@ -240,22 +382,33 @@ def main():
     maze.draw_map(root)
     character = Character(
         canvas=root, x=maze.hashmap['start'][0].x, y=maze.hashmap['start'][0].y, maze=maze, size=maze.size)
-    instructions = Text("Controls\n" + breakText('1.Press Tab to switch algorithms') + "\n" + breakText("2. Press Space to start algorithm") + "\n" + breakText("3. Press P to pause to switch algorithm") + "\n" + breakText("4. Press R to generate random maze") + "\n" + breakText("5. Press C to create custom maze"),
+    instructions = Text("Controls\n" + breakText('1.Press Tab to switch algorithms') + "\n" 
+                        + breakText("2. Press Space Key to start algorithm") + "\n" 
+                        + breakText("3. Press P Key to pause to switch algorithm") + "\n" 
+                        + breakText("4. Press R Key to generate random maze") + "\n" 
+                        + breakText("5. Press C Key to create custom maze") + "\n"
+                        + breakText("6. Use the different toggle buttons to access different options"),
                         root, x=maze.endX - maze.size * 2, y=-maze.startY + maze.size, bold="normal", fontSize=14, align="right")
     instructions.draw()
     algoText = Text(f"Algorithm Information:\n{ALGO_LIST[currentAlgo]}\n\n{breakText(ALGO_INFO[ALGO_LIST[currentAlgo]])}",
                     root, x=-maze.endX + maze.size * 2, y=-maze.startY + maze.size, bold="normal", fontSize=14, align="left")
     algoText.draw()
-    customMapBtn = Button(root, x=-200, y=-250, startShape="square",
-                          text="Custom Map", size=3.25, clickFunc=custom_map)
-    customMapBtn.draw()
+    addStartBtn = Button(root, x=-300, y=-250, startShape="square",
+                     text="Click to\nadd Start", size=3.25, clickText="Adding Start", clickFunc=addStart, toggle=True)
+    addStartBtn.draw()
+    addEndBtn = Button(root, x=-200, y=-250, startShape="square",
+                     text="Click to\nadd End", size=3.25, clickText="Adding End",clickFunc=addEnd, toggle=True)
+    addEndBtn.draw()
     wallBtn = Button(root, x=-100, y=-250, startShape="square",
-                     text="Add Wall", size=3.25, clickFunc=turnLeft, clickText="Remove Wall")
+                     text="Add Wall", size=3.25, clickText="Remove Wall", toggle=True, clickFunc=addWall)
     wallBtn.draw()
-    randomMapBtn = Button(root, x=100, y=-250, startShape="square",
+    customMapBtn = Button(root, x=100, y=-250, startShape="square",
+                          text="Custom Map", size=3.25, clickFunc=custom_map, clickText="Running\nCustom Map", toggle=True, toggleFunc=make_maze)
+    customMapBtn.draw()
+    randomMapBtn = Button(root, x=200, y=-250, startShape="square",
                       text="Generate\nRandom Map", size=3.25, clickFunc=generate_maze)
     randomMapBtn.draw()
-    saveMapBtn = Button(root, x=200, y=-250, startShape="square",
+    saveMapBtn = Button(root, x=300, y=-250, startShape="square",
                       text="Save Map", size=3.25, clickFunc=save_maze)
     saveMapBtn.draw()
     startBtn = Button(root, x=0, y=-250, startShape="turtle", text="START",
@@ -266,9 +419,10 @@ def main():
     root.onkey(switchAlgo, 'Tab')
     root.onkey(start, 'space')
     root.onkey(generate_maze, 'r')
-    root.onkey(custom_map, 'c')
+    root.onkey(custom_map, 'c')    
     root.onkey(character.updateState, "p")
     root.ontimer(updateTimer, 1)
+    root.onscreenclick(None)
     root.mainloop()
     return
 

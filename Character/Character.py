@@ -10,7 +10,8 @@ DIRECTION_MAP = {
     0: "EAST",
     90: "NORTH",
     180: "WEST",
-    270: "SOUTH"
+    270: "SOUTH",
+    360: "EAST"
 }
 
 # Mapping Index
@@ -38,7 +39,7 @@ class Character(RawTurtle):
         self.size = size
         self.shapesize(size / 40)
         self.setheading(0)
-        self.facing = DIRECTION_MAP[self.heading()]
+        self.facing = DIRECTION_MAP[round(self.heading())]
         self.startX = x
         self.startY = y
         self.currentIndex = [int((self.maze.startY - self.y) /
@@ -49,11 +50,11 @@ class Character(RawTurtle):
     # Basic Functions for algorithms
     def turnLeft(self):
         self.left(90)
-        self.facing = DIRECTION_MAP[self.heading()]
+        self.facing = DIRECTION_MAP[round(self.heading())]
 
     def turnRight(self):
         self.right(90)
-        self.facing = DIRECTION_MAP[self.heading()]
+        self.facing = DIRECTION_MAP[round(self.heading())]
 
     def goForward(self):
         validPath, isEnd = self.checkAdj()
@@ -74,9 +75,9 @@ class Character(RawTurtle):
             self.turnLeft()
             self.turnLeft()
         elif self.facing == "WEST":
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.facing = DIRECTION_MAP[round(self.heading())]
         self.goForward()
-        time.sleep(0.5)
+        
 
     def moveRight(self):
         if self.facing == "NORTH":
@@ -87,9 +88,9 @@ class Character(RawTurtle):
             self.turnRight()
             self.turnRight()
         elif self.facing == "EAST":
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.facing = DIRECTION_MAP[round(self.heading())]
         self.goForward()
-        time.sleep(0.5)
+        
 
     def moveForward(self):
         if self.facing == "EAST":
@@ -100,9 +101,9 @@ class Character(RawTurtle):
         elif self.facing == "WEST":
             self.turnRight()
         elif self.facing == "NORTH":
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.facing = DIRECTION_MAP[round(self.heading())]
         self.goForward()
-        time.sleep(0.5)
+        
 
     def moveDown(self):
         if self.facing == "EAST":
@@ -113,9 +114,9 @@ class Character(RawTurtle):
         elif self.facing == "WEST":
             self.turnLeft()
         elif self.facing == "SOUTH":
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.facing = DIRECTION_MAP[round(self.heading())]
         self.goForward()
-        time.sleep(0.5)
+        
 
     def update_pos(self, x, y):
         self.startX = x
@@ -182,7 +183,7 @@ class Character(RawTurtle):
         self.__roam = False
         self.hideturtle()
         self.setheading(0)
-        self.facing = DIRECTION_MAP[self.heading()]
+        self.facing = DIRECTION_MAP[round(self.heading())]
         self.currentIndex = [int((self.maze.startY - self.y) /
                                 self.size), int((self.x - self.maze.endX)/self.size)]
         if algorithm == "Left Hand Rule":
@@ -312,7 +313,7 @@ class Character(RawTurtle):
         self.showturtle()
         if not self.__roam and algorithm in ["Left Hand Rule", "Right Hand Rule"]:
             self.setheading(0)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.facing = DIRECTION_MAP[round(self.heading())]
             self.pendown()
             if not self.maze.get_mapArr()[
                     self.currentIndex[0]][self.currentIndex[1]].is_end():
@@ -329,7 +330,7 @@ class Character(RawTurtle):
             self.penup()
         elif not self.__roam and algorithm in ["Breadth First Search", "Depth First Search", "A* Search", "Greedy Best First Search"]:
             self.setheading(0)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.facing = DIRECTION_MAP[round(self.heading())]
             self.currentIndex = [int((self.maze.startY - self.y) /
                                      self.size), int((self.x - self.maze.endX)/self.size)]
             path = self.move
@@ -364,7 +365,7 @@ class Character(RawTurtle):
                 pathBlock.draw()
                 time.sleep(0.01)
             self.setheading(0)
-            self.facing = DIRECTION_MAP[self.heading()]
+            self.facing = DIRECTION_MAP[round(self.heading())]
             self.pendown()
             self.currentIndex = [int((self.maze.startY - self.y) /
                                      self.size), int((self.x - self.maze.endX)/self.size)]
@@ -383,7 +384,8 @@ class Character(RawTurtle):
         self.penup()
         self.maze.reset()
         self.size = self.maze.size
-        self.update_pos(x=self.maze.hashmap['start'][0].x, y=self.maze.hashmap['start'][0].y)
+        if self.maze.hashmap['start']:
+            self.update_pos(x=self.maze.hashmap['start'][0].x, y=self.maze.hashmap['start'][0].y)
         self.setpos(int(self.startX), int(self.startY))
         self.shapesize(self.size / 40)
         self.x = self.startX
@@ -391,5 +393,5 @@ class Character(RawTurtle):
         self.currentIndex = [int((self.maze.startY - self.y) /
                                  self.size), int((self.x - self.maze.endX)/self.size)]
         self.setheading(0)
-        self.facing = DIRECTION_MAP[self.heading()]
+        self.facing = DIRECTION_MAP[round(self.heading())]
         self.showturtle()
