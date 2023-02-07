@@ -9,6 +9,7 @@ Class: DAAA/FT/2B/01
 Admin No.: P2107404
 """
 
+# Import Libraries
 import sys
 import os
 import turtle as t
@@ -18,9 +19,11 @@ from Screen.Text import Text
 from Screen.Button import Button
 from datetime import datetime, timedelta
 
+# Create Algorithm List
 ALGO_LIST = ["Left Hand Rule", "Right Hand Rule", "Breadth First Search",
              "Depth First Search", "A* Search", "Greedy Best First Search", "Free Roam"]
 
+# Create Algorithm Information to be displayed
 ALGO_INFO = {
     "Left Hand Rule": "The 'Left Hand Rule' approach is to make your way through the maze, while choosing how to turn at intersections as follows: Always turn left if you can. If you cannot turn left, go straight. If you cannot turn left, or go straight, turn right.",
     "Right Hand Rule": "The 'Right Hand Rule' approach is similar to the 'Left Hand Rule': Instead of always turning left, always turn right. If you cannot turn right, go straight. If you cannot turn right or go straight, turn left.",
@@ -31,8 +34,10 @@ ALGO_INFO = {
     "Free Roam": "Use Arrow keys to move around. Have fun!"
 }
 
+# Zero based index to select algorithm
 currentAlgo = 0
 
+# Setup root screen
 root = t.Screen()
 ogTitle = f"PIZZA RUNNER: {ALGO_LIST[currentAlgo]} | Number of steps: 0 | Timer: 00:00"
 root.title(ogTitle)
@@ -40,6 +45,7 @@ title = ogTitle
 root.setup(1200, 675)
 root.cv._rootwindow.resizable(False, False)
 
+# Setup global variables as None
 character = None
 heading = None
 maze = None
@@ -52,19 +58,23 @@ wallBtn = None
 addStartBtn = None
 addEndBtn = None
 
+# UI Improvements
+# Update timer
 def updateTimer():
     global character
     global maze
     global isRunning
+    # Check the state of the character
     if character.state:
         updateTitle()
     isRunning = True
     root.ontimer(updateTimer, 1000)
     return
 
-
+# Update title
 def updateTitle():
     global title
+    # Split to get and edit the different parts of the title
     titleArr = title.split(" | Timer: ")
     stepArr = titleArr[0].split("steps: ")
     stepArr[1] = str(character.step)
@@ -75,16 +85,32 @@ def updateTitle():
     title = " | Timer: ".join(titleArr)
     root.title(title)
 
-
+# Reset title
 def resetTitle():
     global ogTitle
     global title
     ogTitle = f"PIZZA RUNNER: {ALGO_LIST[currentAlgo]} | Number of steps: 0 | Timer: 00:00"
     title = ogTitle
     root.title(ogTitle)
+    
+# Break Text if string is too long
+def breakText(string, maxLength = 30):
+    words = string.split()
+    lines = []
+    line = ""
+    for word in words:
+        if len(line) + len(word) + 1 <= maxLength:
+            line += word + " "
+        else:
+            lines.append(line)
+            line = word + " "
+    lines.append(line)
+    return "\n".join(lines)
 
-
+# Main Functionalities
+# Start algorithms
 def start():
+    # Access global variables
     global character
     global heading
     global maze
@@ -92,28 +118,58 @@ def start():
     global startBtn
     global firstTime
     global customMapBtn
+    # Check if custom is running
     if customMapBtn.toggleState:
         return
+    # Reset title
     resetTitle()
+    # Modify the heading
     headingText = heading.getText()
     if " Unsolvable" in headingText:
         headingText = headingText.split(" Unsolvable")[0]
+    # Ensure character and maze is not on edit mode
     if not character.state and not maze.state:
+        # Reset title for timer and step counter
         resetTitle()
         heading.changeText(headingText + " " + ALGO_LIST[currentAlgo])
         if not isRunning:
             updateTimer()
         solvable = character.start(ALGO_LIST[currentAlgo], firstTime)
         updateTitle()
+        # Checks if solvable
         if solvable:
             heading.changeText(headingText)
         else:
             heading.changeText(headingText + " Unsolvable")
+        # Reset startBtn
         startBtn.reset()
     elif not character.state:
+        # Reset startBtn
         startBtn.reset()
+    # Remove firstTime run
     firstTime = False
 
+# Switch Algorithms
+def switchAlgo():
+    global character
+    global currentAlgo
+    global startBtn
+    global algoText
+    global customMapBtn
+    if not customMapBtn.toggleState:
+        if not character.state:
+            currentAlgo += 1
+            if currentAlgo > len(ALGO_LIST) - 1:
+                currentAlgo = 0
+            algoText.changeText(
+                f"Algorithm Information:\n{ALGO_LIST[currentAlgo]}\n\n{breakText(ALGO_INFO[ALGO_LIST[currentAlgo]])}")
+            resetTitle()
+            startBtn.reset()
+        else:
+            print("Algorithm cannot be switched when turtle is running")
+
+# Soh Hong Yu's Additional Features - Custom Maze
+# Check x,y position of mouse click
 def clickWalls(x, y):
     global maze
     global character
@@ -121,14 +177,14 @@ def clickWalls(x, y):
     global wallBtn
     global addStartBtn
     global addEndBtn
-    # if customMapBtn.toggleState:
-    #     return
+    # Hide turtle
     if character is not None:
         character.hideturtle()
     if customMapBtn is not None:
         if customMapBtn.toggleState:
             gotRow = False
             gotCol = False            
+            # Loop through to check if the rows/cols are in range of mouse click
             for row in range(maze.rows):
                 if y < maze.get_mapArr()[row][0].y + maze.size / 2 and y > maze.get_mapArr()[row][0].y - maze.size / 2:
                     gotRow = True
@@ -137,9 +193,12 @@ def clickWalls(x, y):
                 if x < maze.get_mapArr()[0][col].x + maze.size / 2 and x > maze.get_mapArr()[0][col].x - maze.size / 2:
                     gotCol = True
                     break
+            # Loop through and update the map according to the changes
             if gotCol and gotRow:
                 if not wallBtn.toggleState:
+                    # Check what kind of wall to add
                     if addStartBtn.toggleState:
+                        # Ensure that only 1 start and end exist at 1 time
                         for r in range(maze.rows):
                             for c in range(maze.columns):
                                 if maze.get_mapArr()[r][c].is_start():
@@ -162,14 +221,57 @@ def clickWalls(x, y):
                 else:
                     maze.get_mapArr()[row][col].reset()
                 maze.get_mapArr()[row][col].draw()
+                # Generate maze as string
                 maze.generate_mapString()
 
+
+# Add Wall
+def addWall():
+    global addStartBtn
+    global addEndBtn
+    global wallBtn
+    if addStartBtn.toggleState:
+        addStartBtn.toggleState = False
+        addStartBtn.updateState()
+    if addEndBtn.toggleState:
+        addEndBtn.toggleState = False
+        addEndBtn.updateState()
+
+# Add End
+
+
+def addEnd():
+    global addStartBtn
+    global addEndBtn
+    global wallBtn
+    if addStartBtn.toggleState:
+        addStartBtn.toggleState = False
+        addStartBtn.updateState()
+    if wallBtn.toggleState:
+        wallBtn.toggleState = False
+        wallBtn.updateState()
+
+# Add Start
+def addStart():
+    global addStartBtn
+    global addEndBtn
+    global wallBtn
+    if addEndBtn.toggleState:
+        addEndBtn.toggleState = False
+        addEndBtn.updateState()
+    if wallBtn.toggleState:
+        wallBtn.toggleState = False
+        wallBtn.updateState()
+
+# Make maze
 def make_maze():
+    # Global maze
     global maze
     global character
     global customMapBtn
     checkStart = False
     checkEnd = False
+    # Check if end and start exist to make sure maze is valid
     for r in range(maze.rows):
         for c in range(maze.columns):
             if maze.get_mapArr()[r][c].is_end():
@@ -177,71 +279,46 @@ def make_maze():
             if maze.get_mapArr()[r][c].is_start():
                 checkStart = True
     if checkStart and checkEnd:
+        # Draw map
         maze.draw_map(root)
         maze.generate_mapString()
         character = Character(
             canvas=root, x=maze.hashmap['start'][0].x, y=maze.hashmap['start'][0].y, maze=maze, size=maze.size)
         character.reset_everything()
     else:
+        # Reset custom map if cannot find start and end points
         print("No start point/end point found")
         customMapBtn.toggleState = True
         customMapBtn.updateState()
         custom_map()
     root.onscreenclick(None)
     root.mainloop()
-                
+
+# Link to custom map button                
 def custom_map():
     global maze
     global character
     global customMapBtn
+    # Hide character
     character.hideturtle()
+    # Create custom map
     if not maze.state and not character.state:
         rows, cols = getRowsAndCols(True)
         maze.custom_map(rows, cols, root)
         if character is not None:
             character.reset_everything()
             character.hideturtle()
+        # Allow click
         root.onscreenclick(clickWalls)
         root.mainloop()
     else:
         customMapBtn.toggleState = False
         customMapBtn.updateState()
-    
 
-def breakText(string, maxLength = 30):
-    words = string.split()
-    lines = []
-    line = ""
-    for word in words:
-        if len(line) + len(word) + 1 <= maxLength:
-            line += word + " "
-        else:
-            lines.append(line)
-            line = word + " "
-    lines.append(line)
-    return "\n".join(lines)
-
-
-def switchAlgo():
-    global character
-    global currentAlgo
-    global startBtn
-    global algoText
-    global customMapBtn
-    if not customMapBtn.toggleState:
-        if not character.state:
-            currentAlgo += 1
-            if currentAlgo > len(ALGO_LIST) - 1:
-                currentAlgo = 0
-            algoText.changeText(
-                f"Algorithm Information:\n{ALGO_LIST[currentAlgo]}\n\n{breakText(ALGO_INFO[ALGO_LIST[currentAlgo]])}")
-            resetTitle()
-            startBtn.reset()
-        else:
-            print("Algorithm cannot be switched when turtle is running")
-
+# Save maze
 def save_maze():
     global maze
+    # Get file path and check if file path exist
     fileMsg = "Enter save filename/filepath"
     while True:
         filePath = root.textinput(fileMsg, fileMsg)
@@ -252,9 +329,10 @@ def save_maze():
             filePath = os.path.abspath(
                 os.getcwd()) + "\\" + filePath
         break
-    maze.saveFile(filePath)
+    maze.saveFile(filePath) # Save file based on filepath
     return 
 
+# Soh Hong Yu's Additional Features - Randomized Maze
 def generate_maze():
     global maze
     global character
@@ -268,6 +346,7 @@ def generate_maze():
         rows, cols = getRowsAndCols()
         maze.generate_maze(rows, cols, root)
 
+# get row and col for the maze
 def getRowsAndCols(allowEven = False):
     rowsMsg = "Enter total number of rows"
     while True:
@@ -299,40 +378,9 @@ def getRowsAndCols(allowEven = False):
             colsMsg = "Invalid col number! Enter total number of cols"
     return rows, cols
 
-def addWall():
-    global addStartBtn
-    global addEndBtn
-    global wallBtn
-    if addStartBtn.toggleState:
-        addStartBtn.toggleState = False
-        addStartBtn.updateState()
-    if addEndBtn.toggleState:
-        addEndBtn.toggleState = False
-        addEndBtn.updateState()
-
-def addEnd():
-    global addStartBtn
-    global addEndBtn
-    global wallBtn
-    if addStartBtn.toggleState:
-        addStartBtn.toggleState = False
-        addStartBtn.updateState()
-    if wallBtn.toggleState:
-        wallBtn.toggleState = False
-        wallBtn.updateState()
-
-def addStart():
-    global addStartBtn
-    global addEndBtn
-    global wallBtn
-    if addEndBtn.toggleState:
-        addEndBtn.toggleState = False
-        addEndBtn.updateState()
-    if wallBtn.toggleState:
-        wallBtn.toggleState = False
-        wallBtn.updateState()
-
+# Main Function
 def main():
+    # Global Variables
     global character
     global heading
     global maze
@@ -344,6 +392,7 @@ def main():
     global addEndBtn
     filePath = None
     random = False
+    # Get parameters from cmd
     if (len(sys.argv) == 1):
         print("Using default maze")
         filePath = "example.txt"
@@ -356,6 +405,7 @@ def main():
             print("Invalid file type")
             return
         filePath = txtFile
+    # Check if not random and see if file exist
     if not random:
         if ":\\" not in filePath:
             filePath = os.path.abspath(
@@ -365,14 +415,18 @@ def main():
         except FileNotFoundError:
             print("File does not exist! Please try again!")
             return
+    # Create a maze instance
     maze = Maze(root)
     if not random:
+        # Upload map
         error = maze.upload_map(filePath)
         if error:
             print(f"Map Upload Error: {error}")
             return
     elif random:
+        # Generate maze
         generate_maze()
+    # UI
     heading = Text("PIZZA RUNNERS:", root, x=0,
                    y=285, bold="bold", fontSize=24)
     heading.draw()
@@ -416,6 +470,7 @@ def main():
     startBtn.draw()
     root.delay(0)
     root.listen()
+    # Key presses
     root.onkey(switchAlgo, 'Tab')
     root.onkey(start, 'space')
     root.onkey(generate_maze, 'r')
@@ -426,6 +481,6 @@ def main():
     root.mainloop()
     return
 
-
+# Check and ensure it is the main python file run
 if __name__ == "__main__":
     main()
