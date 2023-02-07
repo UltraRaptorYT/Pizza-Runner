@@ -315,11 +315,6 @@ class Character(RawTurtle):
             self.setheading(0)
             self.facing = DIRECTION_MAP[round(self.heading())]
             self.pendown()
-            if not self.maze.get_mapArr()[
-                    self.currentIndex[0]][self.currentIndex[1]].is_end():
-                self.state = False
-                print("Invalid Maze")
-                return False
             self.currentIndex = [int((self.maze.startY - self.y) /
                                      self.size), int((self.x - self.maze.endX)/self.size)]
             for steps in self.move:
@@ -327,6 +322,11 @@ class Character(RawTurtle):
                     break
                 steps()
                 time.sleep(0.01)
+            if not self.maze.get_mapArr()[
+                    self.currentIndex[0]][self.currentIndex[1]].is_end():
+                self.state = False
+                print("Invalid Maze")
+                return False
             self.penup()
         elif not self.__roam and algorithm in ["Breadth First Search", "Depth First Search", "A* Search", "Greedy Best First Search"]:
             self.setheading(0)
