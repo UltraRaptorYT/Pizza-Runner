@@ -28,7 +28,7 @@ ALGO_INFO = {
     "Depth First Search": "This algorithm starts at the root node and explores as far as possible along each branch before backtracking. It is an uninformed search algorithm.\nDoes not guarantee shortest path",
     "A* Search": "This algorithm is the most optimal in terms of time efficiency. It is an informed search algorithm that utilises 2 heuristics to find the shortest path.\nGuarantees shortest path.",
     "Greedy Best First Search": "This algorithm is an informed search algorithm that only utilises one heuristic function that always chooses the path which appear best at the moment.\nDoes not guarantee shortest path.",
-    "Free Roam": "Have fun"
+    "Free Roam": "Use Arrow keys to move around. Have fun!"
 }
 
 currentAlgo = 0
@@ -112,24 +112,21 @@ def turnLeft():
     global character
     character.turnLeft()
 
-# ! to be removed
-def turnRight():
-    global character
-    character.turnRight()
+def custom_map():
+    print("hi")
 
-
-def breakText(string, maxLength = 25):
-    outputArr = []
-    stringArr = string.split()
-    counter = 0
-    lineArr = []
-    while counter < len(stringArr):
-        lineArr.append(stringArr[counter])
-        if len(" ".join(lineArr)) > maxLength:
-            outputArr.append(" ".join(lineArr))
-            lineArr = []
-        counter += 1
-    return "\n".join(outputArr)
+def breakText(string, maxLength = 30):
+    words = string.split()
+    lines = []
+    line = ""
+    for word in words:
+        if len(line) + len(word) + 1 <= maxLength:
+            line += word + " "
+        else:
+            lines.append(line)
+            line = word + " "
+    lines.append(line)
+    return "\n".join(lines)
 
 
 def switchAlgo():
@@ -152,7 +149,7 @@ def save_maze():
     global maze
     fileMsg = "Enter save filename/filepath"
     while True:
-        filePath = root.textinput(fileMsg, "Enter save filename/filepath")
+        filePath = root.textinput(fileMsg, fileMsg)
         if filePath[-4:] != ".txt":
             fileMsg = "Invalid filename/filepath! Enter save filename/filepath"
             continue
@@ -165,8 +162,12 @@ def save_maze():
 
 def generate_maze():
     global maze
-    rows, cols = getRowsAndCols()
-    maze.generate_maze(rows, cols, root)
+    global character
+    if not maze.state and not character.state:
+        rows, cols = getRowsAndCols()
+        maze.generate_maze(rows, cols, root)
+        if character is not None:
+            character.reset_everything()
 
 def getRowsAndCols():
     rowsMsg = "Enter total number of rows"
@@ -174,10 +175,10 @@ def getRowsAndCols():
         try:
             rows = root.textinput(rowsMsg, rowsMsg)
             rows = int(rows)
-            if rows > 4:
+            if rows > 4 and rows % 2 != 0:
                 break
             else:
-                rowsMsg = "Row number must be more than 4! Enter total number of rows"
+                rowsMsg = "Row number must be at least 5, must be odd and whole number! Enter total number of rows"
         except ValueError:
             rowsMsg = "Invalid row number! Enter total number of rows"
     colsMsg = "Enter total number of cols"
@@ -185,10 +186,10 @@ def getRowsAndCols():
         try:
             cols = root.textinput(colsMsg, colsMsg)
             cols = int(cols)
-            if cols > 4:
+            if cols > 4 and cols % 2 != 0:
                 break
             else:
-                colsMsg = "Col number must be more than 4! Enter total number of cols"
+                colsMsg = "Col number must be at least 5, must be odd and whole number! Enter total number of cols"
         except ValueError:
             colsMsg = "Invalid col number! Enter total number of cols"
     return rows, cols
@@ -239,14 +240,17 @@ def main():
     maze.draw_map(root)
     character = Character(
         canvas=root, x=maze.hashmap['start'][0].x, y=maze.hashmap['start'][0].y, maze=maze, size=maze.size)
-    instructions = Text("Controls\n1.\n2.\n3.",
-                        root, x=maze.endX - maze.size * 4, y=0, bold="normal", fontSize=14, align="right")
+    instructions = Text("Controls\n" + breakText('1.Press Tab to switch algorithms') + "\n" + breakText("2. Press Space to start algorithm") + "\n" + breakText("3. Press P to pause to switch algorithm") + "\n" + breakText("4. Press R to generate random maze") + "\n" + breakText("5. Press C to create custom maze"),
+                        root, x=maze.endX - maze.size * 2, y=-maze.startY + maze.size, bold="normal", fontSize=14, align="right")
     instructions.draw()
     algoText = Text(f"Algorithm Information:\n{ALGO_LIST[currentAlgo]}\n\n{breakText(ALGO_INFO[ALGO_LIST[currentAlgo]])}",
                     root, x=-maze.endX + maze.size * 2, y=-maze.startY + maze.size, bold="normal", fontSize=14, align="left")
     algoText.draw()
+    customMapBtn = Button(root, x=-200, y=-250, startShape="square",
+                          text="Custom Map", size=3.25, clickFunc=custom_map)
+    customMapBtn.draw()
     wallBtn = Button(root, x=-100, y=-250, startShape="square",
-                     text="Add Wall", size=3.25, clickFunc=turnLeft)
+                     text="Add Wall", size=3.25, clickFunc=turnLeft, clickText="Remove Wall")
     wallBtn.draw()
     randomMapBtn = Button(root, x=100, y=-250, startShape="square",
                       text="Generate\nRandom Map", size=3.25, clickFunc=generate_maze)
@@ -261,6 +265,9 @@ def main():
     root.listen()
     root.onkey(switchAlgo, 'Tab')
     root.onkey(start, 'space')
+    root.onkey(generate_maze, 'r')
+    root.onkey(custom_map, 'c')
+    root.onkey(character.updateState, "p")
     root.ontimer(updateTimer, 1)
     root.mainloop()
     return

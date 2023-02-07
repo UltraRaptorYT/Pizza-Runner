@@ -19,11 +19,14 @@ class Block:
     def get_pos(self):
         return self.row, self.col
 
-    def is_closed(self):
+    def is_reset(self):
         return self.color == "white"
 
     def is_open(self):
         return self.color == "yellow"
+
+    def is_path(self):
+        return self.color == "orange"
 
     def is_wall(self):
         return self.color == "grey"
@@ -56,50 +59,42 @@ class Block:
         self.color = "orange"
     
     def draw(self):
-        pen = Pen(canvas=self.canvas, tile_size=self.size)
-        pen.speed("fastest")
-        pen.hideturtle()
-        pen.fillcolor(self.color)
-        pen.setpos(self.x, self.y)
-        pen.stamp()
+        try:
+            self.pen.hideturtle()
+        except AttributeError:
+            self.pen = Pen(canvas=self.canvas, tile_size=self.size)
+        self.pen.speed("fastest")
+        self.pen.hideturtle()
+        self.pen.fillcolor(self.color)
+        self.pen.setpos(self.x, self.y)
+        self.pen.stamp()
         return
 
-    def update_neighbors(self, grid, ignore_walls=False):
+    def clear_stamps(self):
+        try:
+            self.pen.clearstamps()
+        except AttributeError:
+            return
+        
+
+    def update_neighbors(self, grid):
         self.neighbors = []
         # DOWN
-        if (self.row < self.total_rows - 1 and ignore_walls) or (self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_wall()):
+        if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_wall():
             self.neighbors.append(grid[self.row + 1][self.col])
 
         # UP
-        if (self.row > 0 and ignore_walls) or (self.row > 0 and not grid[self.row - 1][self.col].is_wall()):
+        if self.row > 0 and not grid[self.row - 1][self.col].is_wall():
             self.neighbors.append(grid[self.row - 1][self.col])
 
         # RIGHT
-        if (self.col < self.total_cols - 1 and ignore_walls) or (self.col < self.total_cols - 1 and not grid[self.row][self.col + 1].is_wall()):
+        if self.col < self.total_cols - 1 and not grid[self.row][self.col + 1].is_wall():
             self.neighbors.append(grid[self.row][self.col + 1])
 
         # LEFT
-        if (self.col > 0 and ignore_walls) or (self.col > 0 and not grid[self.row][self.col - 1].is_wall()):
+        if self.col > 0 and not grid[self.row][self.col - 1].is_wall():
             self.neighbors.append(grid[self.row][self.col - 1])
 
-    def update_frontiers(self, grid):
-        self.frontiers = []
-        # DOWN
-        if self.row < self.total_rows - 2 and grid[self.row + 2][self.col].is_wall():
-            self.frontiers.append(grid[self.row + 2][self.col])
-
-        #UP
-        if self.row > 1 and grid[self.row - 2][self.col].is_wall():
-            self.frontiers.append(grid[self.row - 2][self.col])
-
-        # RIGHT
-        if self.col < self.total_cols - 2 and grid[self.row][self.col + 2].is_wall():
-            self.frontiers.append(grid[self.row][self.col + 2])
-
-        # LEFT
-        if self.col > 1 and grid[self.row][self.col - 2].is_wall():
-            self.frontiers.append(grid[self.row][self.col - 2])
-    
     # Method overloading
     def __lt__(self, other):
         return False

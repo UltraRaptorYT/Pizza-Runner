@@ -10,10 +10,13 @@ class BreadthFirstSearch(Algorithm):
     self.frontier.add(start)
     currentGrid = None
     while not self.frontier.isEmpty():
-      currentGrid = self.frontier.remove()
+      currentGrid = self.frontier.remove()      
+      currentGrid.update_neighbors(self.character.maze.get_mapArr())
+      if not self.character.state:
+            return
       if currentGrid in self.seen:
         continue
-      if currentGrid.is_end(): # Code this later
+      if currentGrid.is_end():
         path = [currentGrid]
         while not (currentGrid.row == start.row and currentGrid.col == start.col):
           path.append(currentGrid.parent)

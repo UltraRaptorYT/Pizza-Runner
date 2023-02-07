@@ -13,3 +13,11 @@ class Queue:
 
   def contains(self, grid):
     return any(element.row == grid.row and element.col == grid.col for element in self.frontier)
+
+  def __str__(self):
+    queueString = "["
+    for i in self.frontier:
+      queueString += str(i) + ","
+    queueString = queueString[:-1]
+    queueString += "]"
+    return queueString

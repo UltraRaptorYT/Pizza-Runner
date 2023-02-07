@@ -16,6 +16,8 @@ class Maze:
             "end": [],
             "road": [],
         }
+        pen = Pen(canvas=self.canvas, tile_size=self.size)
+        self.pen = pen
         self.state = False
 
     def upload_map(self, filePath):
@@ -41,6 +43,7 @@ class Maze:
                         return "Multiple end found"
                     containsEnd = True
         self.size = min(48 - max(self.rows, self.columns), 40)
+        self.pen.update_size(self.size)
         if not containsStart:
             return "Missing start point"
         if not containsEnd:
@@ -52,14 +55,20 @@ class Maze:
 
     def reset(self):
         self.pen.clearstamps()
+        self.__generate_mapString()
+        for row in range(self.rows):
+            for col in range(self.columns):
+                if self.__mapArr[row][col].is_open() or self.__mapArr[row][col].is_path():
+                    self.__mapArr[row][col].reset()
+                    print("hi")
+                    self.__mapArr[row][col].clear_stamps()
         self.draw_map(self.canvas)
         return
 
     def draw_map(self, canvas=None):
         if canvas == None:
             self.canvas = canvas
-        pen = Pen(canvas=self.canvas, tile_size=self.size)
-        self.pen = pen
+        self.size = min(48 - max(self.rows, self.columns), 40)
         endX = -(self.columns * self.size / 2)
         startY = self.rows * self.size / 2
         self.endX = endX
@@ -75,24 +84,25 @@ class Maze:
                 rowArrBlock = Block(
                     row, col, self.size, self.rows, self.columns, canvas=self.canvas, x=currentX, y=currentY)
                 if blockType == 'X':
-                    pen.fillcolor("grey")
+                    self.pen.fillcolor("grey")
                     rowArrBlock.make_wall()
                     self.hashmap["building"].append(rowArrBlock)
                 elif blockType == 's':
-                    pen.fillcolor("lightgreen")
+                    self.pen.fillcolor("lightgreen")
                     rowArrBlock.make_start()
                     self.hashmap["start"].append(rowArrBlock)
                 elif blockType == 'e':
-                    pen.fillcolor("lightblue")
+                    self.pen.fillcolor("lightblue")
                     rowArrBlock.make_end()
                     self.hashmap["end"].append(rowArrBlock)
                 else:
-                    pen.fillcolor("white")
+                    self.pen.fillcolor("white")
                     self.hashmap["road"].append(rowArrBlock)
+                    rowArrBlock.reset()
                 rowArr.append(rowArrBlock)
-                pen.setpos(currentX, currentY)
-                pen.stamp()
-                # pen.write(f"[{row}, {col}]", align="center")
+                self.pen.setpos(currentX, currentY)
+                self.pen.stamp()
+                # self.pen.write(f"[{row}, {col}]", align="center")
             self.__mapArr.append(rowArr)
         for row in range(self.rows):
             for col in range(self.columns):
@@ -107,86 +117,92 @@ class Maze:
             f.close()
         return
 
-
     def __generate_mapString(self):
         textArr = []
         for row in range(self.rows):
             rowArr = []
             for col in range(self.columns):
                 cell = self.__mapArr[row][col]
+                self.__mapArr[row][col].update_neighbors(self.__mapArr)
                 cellStr = ""
                 if cell.is_wall():
                     cellStr = "X"
                 elif cell.is_start():
                     cellStr = "s"
                 elif cell.is_end():
-                    cellStr = "e"    
+                    cellStr = "e"
                 else:
                     cellStr = "."
                 rowArr.append(cellStr)
             textArr.append("".join(rowArr))
         self.__mapString = "\n".join(textArr)
+        self.size = min(48 - max(self.rows, self.columns), 40)
+        self.pen.update_size(self.size)
         return self.__mapString
 
     def generate_maze(self, rows, cols, canvas):
+        for row in range(self.rows):
+            for col in range(self.columns):
+                self.__mapArr[row][col].clear_stamps()
         self.columns = cols
         self.rows = rows
         self.canvas = canvas
-        pen = Pen(canvas=canvas, tile_size=self.size)
-        self.pen = pen
+        self.size = min(48 - max(self.rows, self.columns), 40)
         endX = -(self.columns * self.size / 2)
         startY = self.rows * self.size / 2
         self.endX = endX
         self.startY = startY
         self.state = True
         self.__mapArr = []
+        visited = []
         for row in range(self.rows):
             currentY = startY - row * self.size
             rowArr = []
+            visitedArr = []
             for col in range(self.columns):
                 currentX = endX + col * self.size
                 rowArrBlock = Block(
                     row, col, self.size, self.rows, self.columns, canvas=self.canvas, x=currentX, y=currentY)
                 rowArrBlock.make_wall()
                 rowArr.append(rowArrBlock)
+                visitedArr.append(False)
             self.__mapArr.append(rowArr)
-        # startIndex = [random.randint(1, self.rows - 2), random.randint(1, self.columns - 2)]
-        # startIndex = [1,1]
-        # startBlock = self.__mapArr[startIndex[0]][startIndex[1]]
-        # startBlock.reset()
-        # self.__generate_mapString()
-        # frontiers = []
-        # frontiers.append(startBlock)
-        # while len(frontiers) > 0:
-        #     currentBlock = frontiers[random.randint(0, len(frontiers) - 1)]
-        #     currentBlock.update_frontiers(self.__mapArr)
-        #     frontierNeighbor = currentBlock.frontiers
-        #     if len(frontierNeighbor) > 0:
-        #         currentPath = frontierNeighbor[random.randint(0, len(frontierNeighbor) - 1)]
-        #         if currentPath.row == currentBlock.row:
-        #             print(currentBlock)
-        #             print(currentPath)
-        #             print(self.__mapArr[currentBlock.row][int((currentBlock.col + currentPath.col) / 2)])
-        #             self.__mapArr[currentBlock.row][int((currentBlock.col + currentPath.col) / 2)].reset()
-        #         elif currentPath.col == currentBlock.col:
-        #             print(currentBlock)
-        #             print(currentPath)
-        #             print(
-        #                 self.__mapArr[int((currentBlock.row + currentPath.row) / 2)][currentBlock.col])
-        #             self.__mapArr[int((currentBlock.row + currentPath.row) / 2)][currentBlock.col].reset()
-        #         currentPath.reset()
-        #     currentBlock.reset()
-        #     frontiers.remove(currentBlock)
-        #     currentBlock = currentPath
-        #     frontiers.append(currentPath)
-        #     self.__generate_mapString()
-        #     print("-" * 10)
-        #     print(self.__mapString)
-        # startBlock.make_start()
-        # currentBlock.make_end()
+            visited.append(visitedArr)
+        r = random.randint(0, self.rows - 1)
+        while r % 2 == 0:
+            r = random.randint(0, self.rows - 1)
+        c = random.randint(0, self.columns - 1)
+        while c % 2 == 0:
+            c = random.randint(0, self.columns - 1)
 
+        def randomized_prim(r, c):
+            currentBlock = self.__mapArr[r][c]
+            visited[r][c] = True
+            currentBlock.reset()
+            directions = [(2, 0), (0, 2), (-2, 0), (0, -2)]
+            random.shuffle(directions)
+            for dr, dc in directions:
+                nr, nc = r + dr, c + dc
+                if nr < 1 or nr > self.rows - 2 or nc < 1 or nc > self.columns - 2 or visited[nr][nc]:
+                    continue
+                else:
+                    self.__mapArr[nr][nc].reset()
+                    self.__mapArr[int((r + nr) / 2)][int((c + nc) / 2)].reset()
+                    randomized_prim(nr, nc)
+                    
+        startBlock = self.__mapArr[r][c]
+        randomized_prim(r, c)
+        startBlock.make_start()
+        self.hashmap["start"] = [startBlock]
+        endRow = random.randint(1, self.rows - 2)
+        endCol = random.randint(1, self.columns - 2)
+        endBlock = self.__mapArr[endRow][endCol]
+        while endBlock.is_start() or endBlock.is_wall():
+            endRow = random.randint(1, self.rows - 2)
+            endCol = random.randint(1, self.columns - 2)
+            endBlock = self.__mapArr[endRow][endCol]
+        endBlock.make_end()
+        self.hashmap["end"] = [endBlock]
         self.__generate_mapString()
-        self.state = False
-        # print("-" * 10)
-        # print(self.__mapString)
-        # print(self.__mapArr)
+        
+

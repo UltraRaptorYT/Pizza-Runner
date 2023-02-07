@@ -21,6 +21,9 @@ class Greedy(Algorithm):
     start.f_score = self.heuristic(start, end)
     while len(self.frontier) > 0:
       currentGrid = self.lowestFScore(self.frontier)
+      currentGrid.update_neighbors(self.character.maze.get_mapArr())
+      if not self.character.state:
+            return
       if currentGrid.is_end(): # Code this later
         path = [currentGrid]
         while not (currentGrid.row == start.row and currentGrid.col == start.col):
