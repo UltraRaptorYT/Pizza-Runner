@@ -298,7 +298,7 @@ class Character(RawTurtle):
             self.__roam = True
             self.pendown()
             self.showturtle()
-            while not self.maze.get_mapArr()[self.currentIndex[0]][self.currentIndex[1]].is_end() and self.state:
+            while self.state:
                 directionList = list(INDEX_MAP.keys())
                 # Arrows Key
                 self.canvas.onkey(self.moveLeft, "Left")
