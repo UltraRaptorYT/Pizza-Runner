@@ -13,7 +13,7 @@ import random
 from Maze.Block import Block
 from Maze.Pen import Pen
 
-# Set valid path type
+# Set valid path type ~ Hong Yu + Samuel
 VALID_PATH = ["X", "s", "e", "."]
 
 # Create Maze class
@@ -83,7 +83,7 @@ class Maze:
         self.draw_map(self.canvas)
         return
 
-    # Draw Map
+    # Draw Map ~ Hong Yu
     def draw_map(self, canvas=None):
         # Restore hash
         self.hashmap["building"] = []

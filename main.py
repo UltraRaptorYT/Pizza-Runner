@@ -19,11 +19,11 @@ from Screen.Text import Text
 from Screen.Button import Button
 from datetime import datetime, timedelta
 
-# Create Algorithm List
+# Create Algorithm List ~ Hong Yu + Samuel
 ALGO_LIST = ["Left Hand Rule", "Right Hand Rule", "Breadth First Search",
              "Depth First Search", "A* Search", "Greedy Best First Search", "Free Roam"]
 
-# Create Algorithm Information to be displayed
+# Create Algorithm Information to be displayed ~ Samuel
 ALGO_INFO = {
     "Left Hand Rule": "The 'Left Hand Rule' approach is to make your way through the maze, while choosing how to turn at intersections as follows: Always turn left if you can. If you cannot turn left, go straight. If you cannot turn left, or go straight, turn right.",
     "Right Hand Rule": "The 'Right Hand Rule' approach is similar to the 'Left Hand Rule': Instead of always turning left, always turn right. If you cannot turn right, go straight. If you cannot turn right or go straight, turn left.",
@@ -37,7 +37,7 @@ ALGO_INFO = {
 # Zero based index to select algorithm
 currentAlgo = 0
 
-# Setup root screen
+# Setup root screen ~ Hong Yu
 root = t.Screen()
 ogTitle = f"PIZZA RUNNER: {ALGO_LIST[currentAlgo]} | Number of steps: 0 | Timer: 00:00"
 root.title(ogTitle)
@@ -45,7 +45,7 @@ title = ogTitle
 root.setup(1200, 675)
 root.cv._rootwindow.resizable(False, False)
 
-# Setup global variables as None
+# Setup global variables as None ~ Hong Yu + Samuel
 character = None
 heading = None
 maze = None
@@ -58,7 +58,7 @@ wallBtn = None
 addStartBtn = None
 addEndBtn = None
 
-# UI Improvements
+# UI Improvements ~ Hong Yu
 # Update timer
 def updateTimer():
     global character
@@ -71,7 +71,7 @@ def updateTimer():
     root.ontimer(updateTimer, 1000)
     return
 
-# Update title
+# Update title ~ Hong Yu
 def updateTitle():
     global title
     # Split to get and edit the different parts of the title
@@ -85,7 +85,7 @@ def updateTitle():
     title = " | Timer: ".join(titleArr)
     root.title(title)
 
-# Reset title
+# Reset title ~ Hong Yu
 def resetTitle():
     global ogTitle
     global title
@@ -93,7 +93,7 @@ def resetTitle():
     title = ogTitle
     root.title(ogTitle)
     
-# Break Text if string is too long
+# Break Text if string is too long ~ Hong Yu
 def breakText(string, maxLength = 30):
     words = string.split()
     lines = []
@@ -108,7 +108,7 @@ def breakText(string, maxLength = 30):
     return "\n".join(lines)
 
 # Main Functionalities
-# Start algorithms
+# Start algorithms ~ Hong Yu + Samuel
 def start():
     # Access global variables
     global character
@@ -149,7 +149,7 @@ def start():
     # Remove firstTime run
     firstTime = False
 
-# Switch Algorithms
+# Switch Algorithms ~ Hong Yu + Samuel
 def switchAlgo():
     global character
     global currentAlgo
@@ -378,7 +378,7 @@ def getRowsAndCols(allowEven = False):
             colsMsg = "Invalid col number! Enter total number of cols"
     return rows, cols
 
-# Main Function
+# Main Function ~ Hong Yu + Samuel
 def main():
     # Global Variables
     global character

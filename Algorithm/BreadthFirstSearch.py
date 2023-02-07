@@ -12,7 +12,7 @@ Admin No.: P2107404
 from Algorithm.Algorithm import Algorithm
 import time
 
-# Inherit Algorithm
+# Inherit Algorithm ~ Hong Yu + Samuel
 class BreadthFirstSearch(Algorithm):
   def __init__(self, character):
     # Super parent

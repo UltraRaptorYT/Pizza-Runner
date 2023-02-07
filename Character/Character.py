@@ -16,7 +16,7 @@ from Algorithm.BreadthFirstSearch import BreadthFirstSearch
 from Algorithm.DepthFirstSearch import DepthFirstSearch
 from Algorithm.Greedy import Greedy
 
-# Mapping Directions
+# Mapping Directions ~ Hong Yu + Samuel
 DIRECTION_MAP = {
     0: "EAST",
     90: "NORTH",

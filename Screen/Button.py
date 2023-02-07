@@ -11,7 +11,7 @@ Admin No.: P2107404
 
 from turtle import RawTurtle
 
-# Inherit RawTurtle
+# Inherit RawTurtle ~ Hong Yu
 class Button(RawTurtle):
     def __init__(self, canvas=None, x=0, y=0, text="", startShape="square", size=2, startColor="lightgreen", clickColor="green", clickFunc=None, clickText=None, toggle=False, toggleFunc=None):
         super().__init__(canvas)

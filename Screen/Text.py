@@ -11,7 +11,7 @@ Admin No.: P2107404
 
 from turtle import RawTurtle
 
-# Inherit RawTurtle
+# Inherit RawTurtle ~ Hong Yu
 class Text(RawTurtle):
     def __init__(self, text, canvas = None, font=None, bold="normal", fontSize=15,align="center",x=0,y=0):
         # Super parent

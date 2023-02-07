@@ -11,7 +11,7 @@ Admin No.: P2107404
 
 from turtle import RawTurtle
 
-# Inherit Raw Turtle
+# Inherit Raw Turtle ~ Hong Yu
 class Pen(RawTurtle):
     def __init__(self, tile_size=25, cursor_size = 20, canvas = None):
         super().__init__(canvas)

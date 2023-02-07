@@ -12,7 +12,7 @@ Admin No.: P2107404
 # Import Queue 
 from Algorithm.Queue import Queue
 
-# Create Abstract class
+# Create Abstract  ~ Hong Yu
 class Algorithm:
   def __init__(self, character):
     self.character = character

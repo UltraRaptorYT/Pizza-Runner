@@ -11,7 +11,7 @@ Admin No.: P2107404
 
 from Maze.Pen import Pen
 
-# Create node which acts like a graph node
+# Create node which acts like a graph node ~ Hong Yu
 class Block:
     def __init__(self, row, col, size, total_rows, total_cols, canvas, x=None, y=None):
         # Preset details

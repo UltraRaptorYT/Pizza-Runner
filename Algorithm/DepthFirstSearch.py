@@ -12,7 +12,7 @@ Admin No.: P2107404
 from Algorithm.BreadthFirstSearch import BreadthFirstSearch
 from Algorithm.Stack import Stack
 
-# Inherit BreadthFirstSearch
+# Inherit BreadthFirstSearch ~ Samuel
 class DepthFirstSearch(BreadthFirstSearch):
     def __init__(self, character):
         # Super parent

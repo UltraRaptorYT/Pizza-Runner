@@ -9,7 +9,7 @@ Class: DAAA/FT/2B/01
 Admin No.: P2107404
 """
 
-# Create Queue class
+# Create Queue class ~ Hong Yu + Samuel
 # As Queue is FIFO, add and remove is based on append() and pop(0)
 class Queue:
   def __init__(self):

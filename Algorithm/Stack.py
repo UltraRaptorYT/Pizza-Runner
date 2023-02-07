@@ -11,7 +11,7 @@ Admin No.: P2107404
 
 from Algorithm.Queue import Queue
 
-# Inherit Queue
+# Inherit Queue ~ Hong Yu + Samuel
 class Stack(Queue):
   def __init__(self):
     # Super parent
