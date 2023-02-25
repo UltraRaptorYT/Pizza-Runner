@@ -184,6 +184,8 @@ class Character(RawTurtle):
         if not self.state:
             return
         block = self.maze.get_mapArr()[index[0]][index[1]]
+        if block.is_start() or block.is_end():
+            return
         # Change color if colorFunc is specified
         if colorFunc:
             eval(f"block.{colorFunc}()")
